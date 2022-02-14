@@ -7,12 +7,6 @@
 
 static char memory[MEMSIZE];
 
-struct header {
-    int allocated;
-    int size;
-    struct header *next;
-};
-
 void *mymalloc(size_t size, char *file, int line)
 {
     //TODO
@@ -24,7 +18,13 @@ void myfree(void *p, char *file, int line)
     //TODO
 }
 
-int isInitialized() {
+int coalesce(void *p) {
+    // coalesce the subsequent and previous chunks with the chunk pointed to by *p
+    // return the number of chunks coalesced with the chunk pointed to by *p
+    return 1;
+}
+
+int is_initialized() {
     // idea: an initialized memory array will always have a header at the beginning
     // with a non-zero size element; an uninitialized memory array should contain all zeroes
     int *p = memory;
