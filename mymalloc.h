@@ -4,13 +4,15 @@
 typedef struct header header_t;
 
 struct header {
-    int allocated;
-    int size;
+    size_t size;
+    int alloc;
     header_t *next;
 };
 
-void *mymalloc(size_t size, char *file, int line);
-void myfree(void *p, char *file, int line);
-int coalesce(void *p);
 header_t *get_header(void *p);
 int is_initialized();
+void initialize();
+void split(header_t *alloc_fit, size_t size);
+void *mymalloc(size_t size, char *file, int line);
+int coalesce(void *p);
+void myfree(void *p, char *file, int line);
