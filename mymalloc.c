@@ -54,7 +54,7 @@ header_t *best_fit_search(header_t *curr, header_t *prev, size_t size_req){
 }
 //splits a free block that is larger then the size requested
 void split(header_t *alloc_split, size_t size_req){
-    header_t *free_split = (void*)((void*)alloc_split + size_req + sizeof(header_t));
+    header_t *free_split = (void*)((void*)alloc_split + size_req + sizeof(header_t)); //(void*) not neccessary 
     free_split->size = (alloc_split->size) - size_req - sizeof(header_t);
     free_split->alloc = 0;
     free_split->next = alloc_split->next;
@@ -64,11 +64,10 @@ void split(header_t *alloc_split, size_t size_req){
 }
 
 void *mymalloc(size_t size_req, char *file, int line){
-    header_t *curr, *prev;
+    header_t *curr, *prev = NULL;
     void *result;
     //if mymalloc() is not initilized, initilize it
-    int init = is_initialized();
-    if(!init){
+    if(!(freeLL->size)){
         initialize();
         printf("Memory initalized\n");
     }
@@ -136,7 +135,7 @@ void myfree(void *p, char *file, int line)
 {
     if((void*)memory <= p && p <= (void*)(memory+MEMSIZE)){
         header_t *curr = p;
-        curr-1;
+        --curr;
         curr->alloc = 0;
         //coalesce(p);
     }
