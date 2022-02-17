@@ -14,14 +14,13 @@ header_t *freeLL = (void*)memory;
 // given a pointer to a chunk of memory, return a pointer to that chunk's header
 header_t *get_header(void *p) {
     // TODO: decide whether to test that p points to an address assigned by mymalloc()
-    return (header_t *)p - 1;
+    return (header_t*)p - 1;
 }
 
 int is_initialized() {
     // idea: an initialized memory array will always have a header at the beginning
     // with a non-zero size element; an uninitialized memory array should contain all zeroes
-    int *p = memory;
-    if (*(p + 1) == 0) {
+    if (*((size_t*)memory) == 0) {
         return 0;
     }
     else {
@@ -116,7 +115,7 @@ int coalesce(void *p) {
 
     // try to coalesce the previous and current chunks
     // start at beginning of memory, traverse linked list until we reach the previous chunk
-    header_t *h = (header_t *)memory;
+    header_t *h = (header_t*)memory;
     while (h < p_header) {
         if (h->next == p_header && !h->alloc) {
             h->next = p_header->next;
