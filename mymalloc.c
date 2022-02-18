@@ -150,14 +150,12 @@ void myfree(void *p, char *file, int line)
         else if (p == curr) {
             printf("Attempt to free a memory chunk that starts at a header\n");
             return;
-        }
-        // cannot free memory that was not allocated by malloc, part 2
-        // don't know a foolproof way to distinguish between pointers inside
-        // and outside of memory[]
-        else {
-            printf("Attempt to free memory not allocated by malloc()\n");
-            return;
-        }
+        }        
         curr = curr->next;
     }
+    // cannot free memory that was not allocated by malloc, part 2
+    // error message if loop terminates without freeing a chunk on the linked list
+    // don't know a foolproof way to distinguish between pointers inside
+    // and outside of memory[]
+    printf("Attempt to free memory not allocated by malloc()\n");
 }
