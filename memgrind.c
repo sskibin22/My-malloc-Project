@@ -4,8 +4,8 @@
 
 int main(int argc, char**argv)
 {
-    int *p = malloc(4100);
-    printf("malloc was used to allocate 4096 bytes\n");
+    int *p = malloc(1024);
+    printf("malloc was used to allocate 1024 bytes\n");
     int *q = malloc(500);
     printf("malloc was used to allocate 500 bytes\n");
 

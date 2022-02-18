@@ -17,16 +17,6 @@ header_t *get_header(void *p) {
     return (header_t*)p - 1;
 }
 
-int is_initialized() {
-    // idea: an initialized memory array will always have a header at the beginning
-    // with a non-zero size element; an uninitialized memory array should contain all zeroes
-    if (*((size_t*)memory) == 0) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
 //initialize first header and point it to the next block in memory
 void initialize(){
     freeLL->size = MEMSIZE - sizeof(header_t);
@@ -132,13 +122,42 @@ int coalesce(void *p) {
 
 void myfree(void *p, char *file, int line)
 {
-    if((void*)memory <= p && p <= (void*)(memory+MEMSIZE)){
-        header_t *curr = p;
-        --curr;
-        curr->alloc = 0;
-        //coalesce(p);
+    // if memory is not initialized, exit immediately
+    if (!(freeLL->size)) {
+        printf("Attempt to free when memory is not initialized\n");
+        return;
     }
-    else{
-        printf("Please provide a valid pointer allocated by mymalloc()\n");
+    // traverse linked list, free if it makes sense to do so,
+    // otherwise generate an error message
+    header_t *curr = freeLL;
+    while (curr != NULL) {
+        // test if p points to a payload; p CANNOT be pointing to a header,
+        // nor can it point to an address outside of memory[]
+        if (p == curr + 1) {
+            if (curr->alloc) {
+                curr->alloc = 0;
+                coalesce(p);
+                return;
+            }
+            // cannot free a chunk that was freed previously
+            else {
+                printf("Attempt to free memory that is already free\n");
+                return;
+            }
+        }
+        // cannot free memory that was not allocated by malloc, part 1
+        // for now, provide a specific error message if p points to a header
+        else if (p == curr) {
+            printf("Attempt to free a memory chunk that starts at a header\n");
+            return;
+        }
+        // cannot free memory that was not allocated by malloc, part 2
+        // don't know a foolproof way to distinguish between pointers inside
+        // and outside of memory[]
+        else {
+            printf("Attempt to free memory not allocated by malloc()\n");
+            return;
+        }
+        curr = curr->next;
     }
 }

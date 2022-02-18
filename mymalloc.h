@@ -10,7 +10,6 @@ struct header {
 };
 
 header_t *get_header(void *p);
-int is_initialized();
 void initialize();
 void split(header_t *alloc_fit, size_t size);
 void *mymalloc(size_t size, char *file, int line);
