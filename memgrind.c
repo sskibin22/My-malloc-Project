@@ -71,16 +71,29 @@ int grind_task(char* task_name, int (*task)()) {
 
 int main(int argc, char**argv)
 {   
-    int *p = malloc(1024);
-    printf("malloc was used to allocate 1024 bytes\n");
-    int *q = malloc(500);
-    printf("malloc was used to allocate 500 bytes\n");
+    int req1 = 500, req2 = 500, req3 = 100, req4 = 200;
+
+    printf("Attempting to allocate %d bytes\n", req1);
+    int *p = malloc(req1);
+
+    printf("Attempting to allocate %d bytes\n", req2);
+    int *q = malloc(req2);
+
+    printf("Attempting to allocate %d bytes\n", req3);
+    int *r = malloc(req3);
 
     free(p);
-    printf("memory was freed from the heap\n");
-
     free(q);
-    printf("memory was freed from the heap\n");
+    free(r);
+
+    printf("Attempting to allocate %d bytes\n", req4);
+    int *s = malloc(req4);
+
+    //free(p);
+    //free(q);
+    //free(r);
+    free(s);
+    
 
     // required tests
     srand(RAND_SEED);
