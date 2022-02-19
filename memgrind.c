@@ -4,39 +4,40 @@
 #include "mymalloc.h"
 
 #define TASK_REPEAT 50
+#define TASK_SIZE 120
 #define RAND_SEED 8675309
 
-// malloc() and immediately free() a 1-byte chunk, 120 times
+// malloc() and immediately free() a 1-byte chunk, TASK_SIZE times
 int task1() {
     int i;
     char *p;
-    for (i = 0; i < 120; i++) {
+    for (i = 0; i < TASK_SIZE; i++) {
         p = malloc(sizeof(char));
         free(p);
     }
     return EXIT_SUCCESS;
 }
 
-// use malloc() to get 120 1-byte chunks, storing the pointers
+// use malloc() to get TASK_SIZE 1-byte chunks, storing the pointers
 // in an array, then use free() to deallocate the chunks.
 int task2() {
     int i;
-    char *p[120];
-    for (i = 0; i < 120; i++) {
+    char *p[TASK_SIZE];
+    for (i = 0; i < TASK_SIZE; i++) {
         p[i] = malloc(sizeof(char));
     }
-    for (i = 0; i < 120; i++) {
+    for (i = 0; i < TASK_SIZE; i++) {
         free(p[i]);
     }
     return EXIT_SUCCESS;
 }
 
 // Randomly choose between allocating and deallocating 1-byte chunks,
-// repeat until malloc() has been called 120 times, then free all remaining allocated chunks
+// repeat until malloc() has been called TASK_SIZE times, then free all remaining allocated chunks
 int task3() {
     int malloc_ind = 0, free_ind = 0;
-    char *p[120];
-    while (malloc_ind < 120) {
+    char *p[TASK_SIZE];
+    while (malloc_ind < TASK_SIZE) {
         if (rand() < RAND_MAX / 2) {
             p[malloc_ind++] = malloc(sizeof(char));
         }
@@ -46,7 +47,7 @@ int task3() {
             }
         }
     }
-    for( ; free_ind < 120; free_ind++) {
+    for( ; free_ind < TASK_SIZE; free_ind++) {
         free(p[free_ind++]);
     }
     return EXIT_SUCCESS;
