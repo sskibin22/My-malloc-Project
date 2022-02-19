@@ -42,6 +42,11 @@ void split(header_t *alloc_split, size_t size_req){
 void *mymalloc(size_t size_req, char *file, int line){
     header_t *curr, *prev, *best_fit;
     void *result; 
+    //if byte size requested is less then 1 report error return NULL
+    if (size_req < 1) {
+        printf("mymalloc() can not allocate less than 1 byte\n");
+        return NULL;
+    }
     //if mymalloc() is not initilized, initilize it
     if(!(freeLL->size)){
         initialize();
