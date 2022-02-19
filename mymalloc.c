@@ -72,7 +72,6 @@ void *mymalloc(size_t size_req, char *file, int line){
     return pointer to the whole chunk*/
     if (best_fit != NULL && best_fit->size == size_req){
         best_fit->alloc = 1;
-        best_fit->next = NULL;
         result = (void*)(++best_fit);
         printf("Exact fitting block allocated\n");
         return result;
