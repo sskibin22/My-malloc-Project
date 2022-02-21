@@ -9,9 +9,13 @@ struct header {
     header_t *next;
 };
 
-header_t *get_header(void *p);
+// enum for memory diagnostics
+enum diagnostic {memory_free, total_payload, free_chunks, total_chunks};
+
+int print_LL_contents();
+int mem_diagnostics(enum diagnostic);
 void initialize();
 void split(header_t *alloc_fit, size_t size);
 void *mymalloc(size_t size, char *file, int line);
-int coalesce(void *p);
-void myfree(void *p, char *file, int line);
+int coalesce(void *);
+void myfree(void *, char *, int);
