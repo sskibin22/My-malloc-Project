@@ -14,30 +14,30 @@ int chunk_count = 0;
 //Points to the main block of memory which is initially free
 header_t *freeLL = (void*)memory;
 
-// print information on contents of linked list
-int print_LL_contents() {
+// print table summarizing contents of linked list
+// Shows node #, size of payload, allocated indicator,
+// and # of bytes to header of next node (if any)
+int print_LL_table() {
     header_t *p = freeLL;
     int node = 0;
     if(!freeLL->size) {
         printf("Memory not allocated\n\n");
         return EXIT_FAILURE;
     }
-    while (p != NULL) {
-        printf("Node %d\n", node);
-        printf("********\n");
-        printf("Size: %d\n", p->size);
-        printf("Allocated: %d\n", p->alloc);
-        printf("Next node: ");
+    printf("Node\tSize\tAlloc\tNext\n");
+    printf("****************************\n");
+    while (p != NULL) {        
+        printf("%d\t%lu\t%d\t", node, p->size, p->alloc);
         if (p->next != NULL) {
-            printf("%d bytes ahead\n", (char *)p->next - (char *)p);
+            printf("%ld\n", (char *)p->next - (char *)p);
         }
         else {
             printf("NULL\n");
         }
         p = p->next;
         node++;
-        printf("\n");
     }
+    printf("\n");
     return EXIT_SUCCESS;
 }
 

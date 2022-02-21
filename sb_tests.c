@@ -8,31 +8,31 @@ int basic_test1() {
 
     printf("Attempting to allocate %d bytes\n", req1);
     int *p = malloc(req1);
-    print_LL_contents();
+    print_LL_table();
 
     printf("Attempting to allocate %d bytes\n", req2);
     int *q = malloc(req2);
 
     free(p);
-    print_LL_contents();
+    print_LL_table();
 
     free(q);
 
     printf("Attempting to allocate %d bytes\n", req3);
     int *r = malloc(req3);
-    print_LL_contents();
+    print_LL_table();
 
     printf("Attempting to allocate %d bytes\n", req4);
     int *s = malloc(req4);
-    print_LL_contents();
+    print_LL_table();
 
     printf("Attempting to free %d-byte chunk\n", req4);
     free(s);
-    print_LL_contents();
+    print_LL_table();
 
     printf("Attempting to free %d-byte chunk\n", req3);
     free(r);
-    print_LL_contents();
+    print_LL_table();
 
     return EXIT_SUCCESS;
 }
@@ -69,7 +69,7 @@ int basic_test3() {
     // request larger chunk than available, part 1
     printf("Requesting allocation of %d bytes\n", req_big);
     int *p = malloc(req_big);
-    //print_LL_contents();
+    //print_LL_table();
 
     // request larger chunk than available, part 2
     printf("\nRequesting allocation of %d bytes\n", req2);
@@ -88,14 +88,14 @@ int basic_test3() {
     // There is a total of 6% of memory free, nevertheless malloc() should return a
     // null pointer and an informative message.
     printf("\nMemory safety test\n");
-    print_LL_contents();
+    print_LL_table();
     p = malloc(req4big);
     q = malloc(req4small);
     int *r  = malloc(req4small);
     int *s  = malloc(req4small);
     free(q);
     free(s);
-    print_LL_contents();
+    print_LL_table();
     printf("%d bytes of memory free\n", mem_diagnostics(memory_free));
     printf("request %d bytes of memory\n", req4fail);
     int *t = malloc(req4fail);

@@ -12,7 +12,7 @@ struct header {
 // enum for memory diagnostics
 enum diagnostic {memory_free, total_payload, free_chunks, total_chunks};
 
-int print_LL_contents();
+int print_LL_table();
 int mem_diagnostics(enum diagnostic);
 void initialize();
 void split(header_t *alloc_fit, size_t size);
