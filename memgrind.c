@@ -56,14 +56,16 @@ int task3() {
 int grind_task(char* task_name, int (*task)()) {
     int i;
     struct timeval current_time;
-    long start_time, elapsed_time = 0;
+    long start_time_sec, start_time_usec, elapsed_time = 0;
 
     for (i=0; i < TASK_REPEAT; i++) {
         gettimeofday(&current_time, NULL);
-        start_time = current_time.tv_usec;
+        start_time_sec = current_time.tv_sec;
+        start_time_usec = current_time.tv_usec;
         (*task)();
         gettimeofday(&current_time, NULL);
-        elapsed_time += current_time.tv_usec - start_time;
+        elapsed_time += (current_time.tv_sec - start_time_sec) * 1000 +
+            current_time.tv_usec - start_time_usec;
     }
     printf("%s required an average of %ld usec per run\n", task_name, elapsed_time / TASK_REPEAT);
     return EXIT_SUCCESS;
