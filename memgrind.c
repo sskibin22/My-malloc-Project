@@ -47,7 +47,7 @@ int task3() {
             }
         }
     }
-    for( ; free_ind < TASK_SIZE; free_ind++) {
+    while(free_ind < TASK_SIZE) {
         free(p[free_ind++]);
     }
     return EXIT_SUCCESS;
@@ -97,7 +97,7 @@ int main(int argc, char**argv)
     srand(RAND_SEED);
     grind_task("Task 1", &task1);
     grind_task("Task 2", &task2);
-    //grind_task("Task 3", &task3);
+    grind_task("Task 3", &task3);
 
     return EXIT_SUCCESS;
 }
