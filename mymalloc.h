@@ -10,10 +10,12 @@ struct header {
 };
 
 // enum for memory diagnostics
-enum diagnostic {memory_free, total_payload, free_chunks, total_chunks};
+enum diagnostic {memory_free, total_payload, free_chunks, total_chunks,
+                largest_free};
 
 int print_LL_table();
 int mem_diagnostics(enum diagnostic);
+void print_err(char *, int, char *);
 void initialize();
 void split(header_t *alloc_fit, size_t size);
 void *mymalloc(size_t size, char *file, int line);
