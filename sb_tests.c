@@ -113,11 +113,31 @@ int basic_test3() {
     return EXIT_SUCCESS;
 }
 
+// replicate error discovered in memgrind test 4
+int basic_test4()
+{
+    char *p[8];
+    p[0] = malloc(20);
+    p[1] = malloc(12);
+    p[2] = malloc(17);
+    free(p[2]);
+    p[3] = malloc(22);
+    p[4] = malloc(22);
+    p[5] = malloc(9);
+    p[6] = malloc(11);
+    free(p[5]);
+    free(p[3]);
+    print_LL_table();
+    p[7] = malloc(10);
+
+}
+
 int main(int argc, char**argv)
 {   
-    basic_test1();
+    /*basic_test1();
     basic_test2();
-    basic_test3();
+    basic_test3();*/
+    basic_test4();
 
     return EXIT_SUCCESS;
 }
