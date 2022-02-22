@@ -34,7 +34,8 @@ int task2() {
 
 // Randomly choose between allocating and deallocating 1-byte chunks,
 // repeat until malloc() has been called TASK_SIZE times, then free all remaining allocated chunks
-int task3() {
+// variant 3a frees chunks in the order they were allocated (FIFO)
+int task3a() {
     int malloc_ind = 0, free_ind = 0;
     char *p[TASK_SIZE];
     while (malloc_ind < TASK_SIZE) {
@@ -49,6 +50,51 @@ int task3() {
     }
     while(free_ind < TASK_SIZE) {
         free(p[free_ind++]);
+    }
+    return EXIT_SUCCESS;
+}
+
+// Randomly choose between allocating and deallocating 1-byte chunks,
+// repeat until malloc() has been called TASK_SIZE times, then free all remaining allocated chunks
+// variant 3b frees previously allocated chunks in random order
+int task3b() {
+    int malloc_ind = 0, alloc_ct = 0;
+    int rand_free, i;
+    char *p[TASK_SIZE];
+
+    while (malloc_ind < TASK_SIZE) {
+        // may randomly choose to call malloc()
+        if (rand() < RAND_MAX / 2) {
+            p[malloc_ind++] = malloc(sizeof(char));
+            alloc_ct++;
+        }
+        // otherwise, if at least one chunk is allocated, then randomly
+        // choose an allocated chunk and free it
+        else {
+            if (alloc_ct > 0) {
+                rand_free = (rand() * malloc_ind) / RAND_MAX;
+                i = (rand_free + 1) % malloc_ind;
+                // sequentially search for an allocated chunk and free it
+                while (i != rand_free) {
+                    if (((header_t *)p[i] - 1)->alloc) {
+                        free(p[i]);
+                        alloc_ct--;
+                        break;
+                    }
+                    else {
+                        i = (i + 1) % malloc_ind;
+                    }
+                }
+            }
+        }
+    }
+    // free any remaining allocated chunks
+    int free_ctr = 0;
+    for (i=0; i < TASK_SIZE; i++) {
+        if (((header_t *)p[i] - 1)->alloc) {
+            free(p[i]);
+            free_ctr++;
+        }
     }
     return EXIT_SUCCESS;
 }
@@ -97,7 +143,8 @@ int main(int argc, char**argv)
     srand(RAND_SEED);
     grind_task("Task 1", &task1);
     grind_task("Task 2", &task2);
-    grind_task("Task 3", &task3);
+    grind_task("Task 3a", &task3a);
+    grind_task("Task 3b", &task3b);
 
     return EXIT_SUCCESS;
 }
