@@ -144,7 +144,7 @@ void *mymalloc(size_t size_req, char *file, int line){
     }
     /*else if size of chunk found in LL is larger then requested memory size 
     call split method and return pointer to allocated memory chunk*/
-    else if(best_fit != NULL && best_fit->size >= (size_req + sizeof(header_t))){
+    else if(best_fit != NULL && best_fit->size > (size_req + sizeof(header_t))){
         split(best_fit, size_req);
         result = (void*)(++best_fit);
         printf("Fitting block allocated with split\n");
