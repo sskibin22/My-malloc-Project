@@ -184,28 +184,6 @@ int grind_task(char* task_name, int (*task)()) {
 
 int main(int argc, char**argv)
 {   
-    /*
-    int req1 = 4096 - sizeof(header_t), req2 = 500, req3 = 100, req4 = 200;
-
-    printf("Attempting to allocate %d bytes\n", req1);
-    int *p = malloc(req1);
-
-    printf("Attempting to allocate %d bytes\n", req2);
-    int *q = malloc(req2);
-
-    free(p);
-    free(q);
-
-    printf("Attempting to allocate %d bytes\n", req3);
-    int *r = malloc(req3);
-
-    printf("Attempting to allocate %d bytes\n", req4);
-    int *s = malloc(req4);
-
-    free(r);
-    free(s);
-    */
-
     //required tests:
     srand(RAND_SEED);
     //grind_task("Task 1", &task1);
