@@ -1,5 +1,5 @@
-My-malloc-Project/basic_tests.o
-My-malloc-Project/memgrind.o
-My-malloc-Project/mymalloc.o
-My-malloc-Project/utils.o
-My-malloc-Project/test.exe
+basic_tests.o
+memgrind.o
+mymalloc.o
+utils.o
+test.exe
