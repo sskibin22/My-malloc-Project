@@ -24,7 +24,7 @@ int print_LL_table() {
         printf("Memory not allocated\n\n");
         return EXIT_FAILURE;
     }
-    printf("Node\tSize\tAlloc\tNext\n");
+    printf("Header\tSize\tAlloc\tNext\n");
     printf("****************************\n");
     while (p != NULL) {        
         printf("%d\t%lu\t%d\t", node, p->size, p->alloc);
