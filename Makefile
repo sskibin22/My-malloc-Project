@@ -4,7 +4,7 @@ CFLAGS = -std=c99 -Wall
 test: memgrind.o basic_tests.o utils.o mymalloc.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-memgrind.o: mymalloc.h
+memgrind.o: mymalloc.h basic_tests.h
 basic_tests.o: mymalloc.h
 utils.o: mymalloc.h
 mymalloc.o: mymalloc.h

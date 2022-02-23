@@ -84,8 +84,8 @@ void initialize(){
 
 //splits a free block that is larger then the size requested
 void split(header_t *alloc_split, size_t size_req){
-    header_t *free_split = (void*)((void*)alloc_split + size_req + sizeof(header_t)); //(void*) not neccessary 
-    free_split->size = (alloc_split->size) - size_req - sizeof(header_t);
+    header_t *free_split = ((void*)alloc_split + size_req + sizeof(header_t));  //+ sizeof(header_t) //points free_split pointer to end of alloc_split header + requested byte size + size of header(12 bytes)
+    free_split->size = (alloc_split->size) - size_req - sizeof(header_t);   //set size of free_split to allocated size - size requested - size of header(12 bytes).
     free_split->alloc = 0;
     free_split->next = alloc_split->next;
     alloc_split->size = size_req;
@@ -99,7 +99,7 @@ void *mymalloc(size_t size_req, char *file, int line){
     void *result; 
     //if byte size requested is less then 1 report error return NULL
     if (size_req < 1) {
-        printf("mymalloc() can not allocate less than 1 byte\n");
+        print_err(file, line, "malloc cannot allocate less then 1 byte of memory\n");
         return NULL;
     }
     //if mymalloc() is not initilized, initilize it
@@ -130,23 +130,29 @@ void *mymalloc(size_t size_req, char *file, int line){
     }
     /*if size of chunk found in LL is equal to size of requested memory
     return pointer to the whole chunk*/
-    if (best_fit != NULL && best_fit->size == size_req){
+    if (best_fit != NULL && (best_fit->size == size_req || best_fit->size == (size_req + sizeof(header_t)))){
         best_fit->alloc = 1;
+        if (best_fit->size == size_req){
+            printf("Exact fitting block allocated\n");
+        }
+        else {
+            int extra_bytes = best_fit->size - size_req;
+            printf("Allocating block with %d more bytes of memory to offset empty chunk\n", extra_bytes);
+        }
         result = (void*)(++best_fit);
-        // printf("Exact fitting block allocated\n");
         return result;
     }
     /*else if size of chunk found in LL is larger then requested memory size 
     call split method and return pointer to allocated memory chunk*/
-    else if(best_fit != NULL && best_fit->size > (size_req + sizeof(header_t))){
+    else if(best_fit != NULL && best_fit->size >= (size_req + sizeof(header_t))){
         split(best_fit, size_req);
         result = (void*)(++best_fit);
-        // printf("Fitting block allocated with split\n");
+        printf("Fitting block allocated with split\n");
         return result;
     }
     //else if conditions are not met return NULL
     else{
-        printf("No sufficient memory to allocate\n");
+        print_err(file, line, "No sufficient memory to allocate\n");
         return NULL;
     }
 }
@@ -205,7 +211,7 @@ void myfree(void *p, char *file, int line)
             if (curr->alloc) {
                 curr->alloc = 0;
                 coalesce(p);
-                // printf("Free successful!\n");
+                printf("Free successful!\n");
                 return;
             }
             // cannot free a chunk that was freed previously

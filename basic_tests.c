@@ -146,26 +146,26 @@ int basic_test4()
 {
     char *p[8];
     p[0] = malloc(20);
+    print_LL_table();
     p[1] = malloc(12);
+    print_LL_table();
     p[2] = malloc(17);
+    print_LL_table();
     free(p[2]);
+    print_LL_table();
     p[3] = malloc(22);
+    print_LL_table();
     p[4] = malloc(22);
+    print_LL_table();
     p[5] = malloc(9);
+    print_LL_table();
     p[6] = malloc(11);
+    print_LL_table();
     free(p[5]);
+    print_LL_table();
     free(p[3]);
     print_LL_table();
     p[7] = malloc(10);
+    print_LL_table();
 
-}
-
-int main(int argc, char**argv)
-{   
-    //basic_test1();
-    basic_test2();
-    basic_test3();
-    //basic_test4();
-
-    return EXIT_SUCCESS;
 }

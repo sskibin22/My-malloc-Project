@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "mymalloc.h"
+#include "basic_tests.h"
 
 #define TASK_REPEAT 50
 #define TASK_SIZE 120
@@ -205,13 +206,20 @@ int main(int argc, char**argv)
     free(s);
     */
 
-    // required tests
+    //required tests:
     srand(RAND_SEED);
-    /*grind_task("Task 1", &task1);
-    grind_task("Task 2", &task2);
-    grind_task("Task 3a", &task3a);
-    grind_task("Task 3b", &task3b);*/
-    grind_task("Task 4", &task4);
+    //grind_task("Task 1", &task1);
+    //grind_task("Task 2", &task2);
+    //grind_task("Task 3a", &task3a);
+    //grind_task("Task 3b", &task3b);
+    //grind_task("Task 4", &task4);
+
+    //basic tests:
+
+    //basic_test1();
+    //basic_test2();
+    //basic_test3();
+    basic_test4();
 
     return EXIT_SUCCESS;
 }
