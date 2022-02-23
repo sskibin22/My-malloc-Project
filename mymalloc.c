@@ -63,8 +63,11 @@ int mem_diagnostics(enum diagnostic diag) {
             case total_chunks:
                 accum++;
                 break;
+            case largest_free:
+                if (!p->alloc && p->size > accum) accum = p->size;
+                break;
             default:
-                printf("Invalid diagnostic selected\n");
+                printf("Invalid memory diagnostic selected\n");
                 return -1;
         }
         p = p->next;
@@ -189,7 +192,7 @@ void myfree(void *p, char *file, int line)
 {
     // if memory is not initialized, exit immediately
     if (!(freeLL->size)) {
-        printf("Attempt to free when memory is not initialized\n");
+        print_err(file, line, "attempt to free when memory is not initialized\n");
         return;
     }
     // traverse linked list, free if it makes sense to do so,
@@ -207,14 +210,14 @@ void myfree(void *p, char *file, int line)
             }
             // cannot free a chunk that was freed previously
             else {
-                printf("Attempt to free memory that is already free\n");
+                print_err(file, line, "attempt to free memory that is already free\n");
                 return;
             }
         }
         // cannot free memory that was not allocated by malloc, part 1
         // for now, provide a specific error message if p points to a header
         else if (p == curr) {
-            printf("Attempt to free a memory chunk that starts at a header\n");
+            print_err(file, line, "attempt to free a memory chunk that starts at a header\n");
             return;
         }        
         curr = curr->next;
@@ -223,5 +226,5 @@ void myfree(void *p, char *file, int line)
     // error message if loop terminates without freeing a chunk on the linked list
     // don't know a foolproof way to distinguish between pointers inside
     // and outside of memory[]
-    printf("Attempt to free memory not allocated by malloc()\n");
+    print_err(file, line, "attempt to free memory not allocated by malloc()\n");
 }
