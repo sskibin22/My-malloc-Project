@@ -189,7 +189,7 @@ int main(int argc, char**argv)
     //task2();
     //task3a();
     //task3b();
-    task4();
+    //task4();
 
     //required tests (50 iterations):
     srand(RAND_SEED);
@@ -206,6 +206,7 @@ int main(int argc, char**argv)
     //basic_test3();
     //basic_test4();
     //basic_test5();
+    basic_test6();
 
     return EXIT_SUCCESS;
 }

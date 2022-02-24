@@ -224,3 +224,27 @@ int basic_test5(){
     
     return EXIT_SUCCESS;
 }
+int basic_test6(){
+    int n = 118, *q, *r, *s, *t;
+    char *p[n];
+    for (int i = 0; i < n; i++){
+        p[i] = malloc(22);
+    }
+    q = malloc(38);
+    r = malloc(10);
+    print_LL_table();
+    free(p[50]);
+    free(p[80]);
+    //free(p[81]);
+    print_LL_table();
+    s = malloc(12);
+    print_LL_table();
+    t = malloc(10);
+    print_LL_table();
+    free(q);
+    print_LL_table();
+    free(s);
+    print_LL_table();
+
+    return EXIT_SUCCESS;
+}
