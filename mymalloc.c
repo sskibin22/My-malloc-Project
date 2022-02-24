@@ -116,10 +116,11 @@ void *mymalloc(size_t size_req, char *file, int line){
         prev=curr;
         curr=curr->next;
     }
+    //(curr->size < size_req && (curr->size == size_req || curr->size == (size_req + sizeof(header_t)))
     //set best-fit pointer equal to the first chunk that is large enough to fit the requested byte size if curr chunk is free
     if (curr->alloc == 0) best_fit = curr;
     else best_fit = NULL;
-    //while curr/best_fit are not the last chunks in the heap continue traversing the heap
+
     //use best-fit alg to find the minimum size chunk large enough to fit the requested byte size
     while (curr->next != NULL){
         prev = curr;
@@ -130,7 +131,7 @@ void *mymalloc(size_t size_req, char *file, int line){
     }
     /*if size of chunk found in LL is equal to size of requested memory
     return pointer to the whole chunk*/
-    if (best_fit != NULL && (best_fit->size == size_req || best_fit->size == (size_req + sizeof(header_t)))){
+    if (best_fit != NULL && (best_fit->size >= size_req && best_fit->size <= (size_req + sizeof(header_t)))){
         best_fit->alloc = 1;
         if (best_fit->size == size_req){
             printf("Exact fitting block allocated\n");

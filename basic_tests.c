@@ -153,7 +153,7 @@ int basic_test4()
     print_LL_table();
     free(p[2]);
     print_LL_table();
-    p[3] = malloc(22);
+    p[3] = malloc(20);
     print_LL_table();
     p[4] = malloc(22);
     print_LL_table();
@@ -168,4 +168,59 @@ int basic_test4()
     p[7] = malloc(10);
     print_LL_table();
 
+    return EXIT_SUCCESS;
+}
+
+int basic_test5(){
+    int *ptr; 
+    char *ptr2; 
+    float *ptr3;
+    int n, i;
+ 
+    //get the number of elements for the array from user
+    printf("Enter number of elements:");
+    scanf("%d",&n);
+    printf("Entered number of elements: %d\n", n);
+ 
+    //Dynamically allocate memory to each pointer using malloc()
+    ptr = (int*)malloc(n * sizeof(int));
+    ptr2 = (char*)malloc(n * sizeof(char));
+    ptr3 = (float*)malloc(n * sizeof(float));
+    
+    //set elements of array as integers
+    for (i = 0; i < n; ++i) {
+        ptr[i] = i + 1;
+    }
+    //set elements of array as characters
+    for (i = 0; i < n; ++i) {
+        ptr2[i] = 'A';
+    }
+    //set elements of array as floats
+    for (i = 0; i < n; ++i) {
+        ptr3[i] = i + 0.5;
+    }
+
+    //print the elements of each array
+    printf("The elements of the integer array are: ");
+    for (i = 0; i < n; ++i) {
+        printf("%d, ", ptr[i]);
+    }
+    printf("\n");
+    printf("The elements of the character array are: ");
+    for (i = 0; i < n; ++i) {
+        printf("%c, ", ptr2[i]);
+    }
+    printf("\n");
+    printf("The elements of the float array are: ");
+    for (i = 0; i < n; ++i) {
+        printf("%.2f, ", ptr3[i]);
+    }
+    printf("\n");
+
+    //deallocate memory from heap
+    free(ptr);
+    free(ptr2);
+    free(ptr3);
+    
+    return EXIT_SUCCESS;
 }
