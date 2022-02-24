@@ -185,6 +185,13 @@ int grind_task(char* task_name, int (*task)()) {
 int main(int argc, char**argv)
 {   
     //required tests:
+    //task1();
+    //task2();
+    //task3a();
+    //task3b();
+    task4();
+
+    //required tests (50 iterations):
     srand(RAND_SEED);
     //grind_task("Task 1", &task1);
     //grind_task("Task 2", &task2);
@@ -197,7 +204,7 @@ int main(int argc, char**argv)
     //basic_test1();
     //basic_test2();
     //basic_test3();
-    basic_test4();
+    //basic_test4();
     //basic_test5();
 
     return EXIT_SUCCESS;
