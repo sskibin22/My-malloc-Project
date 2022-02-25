@@ -201,10 +201,8 @@ int main(int argc, char**argv)
 
     //basic tests:
 
-    //basic_test1();
-    //basic_test2();
-    //basic_test3();
-    //basic_test4();
+    //normal_ops();
+    //break_things();
     //basic_test5();
     basic_test6();
 

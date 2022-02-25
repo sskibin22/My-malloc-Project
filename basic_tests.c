@@ -2,53 +2,17 @@
 #include <stdlib.h>
 #include "mymalloc.h"
 
-int basic_test1() {
-    // DELETE: these are our earliest tests for functionality
-    int req1 = 4096 - sizeof(header_t), req2 = 500, req3 = 100, req4 = 200;
-
-    printf("Attempting to allocate %d bytes\n", req1);
-    int *p = malloc(req1);
-    print_LL_table();
-
-    printf("Attempting to allocate %d bytes\n", req2);
-    int *q = malloc(req2);
-
-    free(p);
-    print_LL_table();
-
-    free(q);
-
-    printf("Attempting to allocate %d bytes\n", req3);
-    int *r = malloc(req3);
-    print_LL_table();
-
-    printf("Attempting to allocate %d bytes\n", req4);
-    int *s = malloc(req4);
-    print_LL_table();
-
-    printf("Attempting to free %d-byte chunk\n", req4);
-    free(s);
-    print_LL_table();
-
-    printf("Attempting to free %d-byte chunk\n", req3);
-    free(r);
-    print_LL_table();
-
-    return EXIT_SUCCESS;
-}
-
-int basic_test2() {
+int normal_ops() {
     // make sure code works when it is supposed to    
-    int p_size_req = 10 * sizeof(int);
-    int q_size_req = 5 * sizeof(int);
-    
-    int *p = malloc(p_size_req);
-    int *q = malloc(q_size_req);
     
     printf("\nTest 1: make sure malloc is returning a pointer to the payload, "
         "not the header\n");
+    int p_size_req = 10 * sizeof(int);
+    int q_size_req = 5 * sizeof(int);    
     printf("request %d bytes, return pointer p\n", p_size_req);
+    int *p = malloc(p_size_req);    
     printf("request %d bytes, return pointer q\n", q_size_req);
+    int *q = malloc(q_size_req);
     int p_alloc = ((header_t *)p - 1)->alloc;
     int p_size_size = ((header_t *)p - 1)->size;
     int q_alloc = ((header_t *)q - 1)->alloc;
@@ -56,7 +20,7 @@ int basic_test2() {
     printf("header imputed from p reports allocated == %d\n", p_alloc);
     printf("header imputed from p reports size == %d\n", p_size_size);
     printf("header imputed from q reports allocated == %d\n", q_alloc);
-    printf("header imputed from q reports allocated == %d\n", q_size_size);
+    printf("header imputed from q reports size == %d\n", q_size_size);
     if (p_size_req == p_size_size && p_alloc == 1 
         && q_size_req == q_size_size && q_alloc == 1) {
         printf("PASS\n");
@@ -82,12 +46,9 @@ int basic_test2() {
     return EXIT_SUCCESS;
 }
 
-int basic_test3() {
+int break_things() {
     // see what happens when we try doing bad stuff
     
-    
-    
-
     // request larger chunk than available, part 1
     int req3 = 4094;
     printf("\nTest 3: request too large a chunk of memory, part 1\n");
@@ -114,59 +75,37 @@ int basic_test3() {
     // There is a total of 6% of memory free, nevertheless malloc() should return a
     // null pointer and an informative message.
     printf("\nTest 6: memory safety\n");
-    printf("request four allocations, free two of them\n\n");
+    printf("request four allocations, free two of them, then request an allocation\n "
+        "that fits within total free memory but would extend beyond the end of memory\n\n");
     int req6big = 3700, req6small = 110, req6fail = 192;
+    printf("request %d bytes, return pointer p\n", req6big);
     p = malloc(req6big);
+    printf("request %d bytes, return pointer q\n", req6small);
     q = malloc(req6small);
+    printf("request %d bytes, return pointer r\n", req6small);
     int *r  = malloc(req6small);
+    printf("request %d bytes, return pointer s\n", req6small);
     int *s  = malloc(req6small);
+    printf("free q and s\n");
     free(q);
     free(s);
     print_LL_table();
     printf("%d bytes of memory free\n", mem_diagnostics(memory_free));
-    printf("request %d bytes of memory\n", req6fail);
+    printf("request %d bytes\n", req6fail);
     int *t = malloc(req6fail);
     printf("null pointer returned: %d\n\n", t == NULL);
+    // clean-up
+    free(r);
 
     // test free() usage errors
     printf("\nTest 7: free() usage errors\n");
-    printf("\nfree a local variable:\n");
+    printf("\ntry freeing a local variable:\n");
     free(&req6big);
-    printf("\nfree a ptr offset by +1 byte from a ptr returned by malloc:\n");
+    printf("\ntry freeing a ptr offset by +1 byte from a ptr returned by malloc:\n");
     free(p + 1);
-    printf("\nfree a ptr that's already been freed:\n");
+    printf("\ntry freeing a ptr that's already been freed:\n");
     free(p);
     free(p);
-
-    return EXIT_SUCCESS;
-}
-
-// replicate error discovered in memgrind test 4
-int basic_test4()
-{
-    char *p[8];
-    p[0] = malloc(20);
-    print_LL_table();
-    p[1] = malloc(12);
-    print_LL_table();
-    p[2] = malloc(17);
-    print_LL_table();
-    free(p[2]);
-    print_LL_table();
-    p[3] = malloc(20);
-    print_LL_table();
-    p[4] = malloc(22);
-    print_LL_table();
-    p[5] = malloc(9);
-    print_LL_table();
-    p[6] = malloc(11);
-    print_LL_table();
-    free(p[5]);
-    print_LL_table();
-    free(p[3]);
-    print_LL_table();
-    p[7] = malloc(10);
-    print_LL_table();
 
     return EXIT_SUCCESS;
 }
@@ -193,7 +132,7 @@ int basic_test5(){
     }
     //set elements of array as characters
     for (i = 0; i < n; ++i) {
-        ptr2[i] = 'A';
+        ptr2[i] = 'A' + i;
     }
     //set elements of array as floats
     for (i = 0; i < n; ++i) {
