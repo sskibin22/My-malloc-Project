@@ -58,3 +58,38 @@ DESCRIPTIONS OF INCLUDED FILES:
 ----------
 TEST PLAN:
 ----------
+a) malloc(n) correctly allocates n bytes of memory
+    ->Test: make sure the address of the metadata of the next chunk (or the end of the memory array) is at least n bytes higher than the pointer returned from malloc(n)
+
+b) (closely related to the previous property) malloc() returns a pointer to the start of the data portion of each chunk, not to the start of the metadata portion, or to any other address in the memory array (or outside the memory array)
+    ->Test: can we test that a pointer returned from malloc() is n bytes larger than the start of some chunk in the memory array, where n is the size of any metadata portion?
+
+c) malloc() does not allocate more memory than is available
+    ->Test: call malloc(n), where n is larger than the available memory, and return a null pointer along with an informative error message
+
+d) malloc() sensibly handles requests for a chunk of size 0 or less
+    ->Test: call malloc(n) where n is zero or negative, return a null pointer along with an informative error message (maybe only need the error message for negative numbers)
+
+e) malloc() returns first available exact fitting chunk (if one exists) and does not split the fitted chunk but rather returns a pointer to the exact fitting chunk and sets it's allocated flag to true(1)
+
+f) malloc() handles situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range bite size requested < free chunk available <= bite size requested + byte size of a header(24 bytes on linux).  In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
+
+g) Memory Safety: malloc() cannot allocate a chunk that extends beyond the boundaries of our memory array
+    ->Test: allocate four chunks
+        ->chunk 0 takes 91% of array capacity 
+        ->chunks 1 through 3 take up 3% each. 
+        ->Free chunks 1 and 3. 
+        Then try to allocate 5% of array capacity. There is a total of 6% of memory free, nevertheless malloc() should not return a pointer to chunk 3. It should return a null pointer and perhaps an informative error message
+
+h) Detection of usage errors with free(): including... 
+    1)trying to free() addresses not obtained with malloc() 
+    2)trying to free() addresses not at the start of a chunk 
+    3)calling free() more than once on the same pointer
+    ->Test: Try doing each of these, ensure a correct, informative error message is sent to the terminal
+
+i) Correct initialization of memory array: need to set up initial memory management data structure(s) if and only if malloc() (and free()?) are called on a memory array that has just been initialized
+    ->Test: make sure data structure is correctly set up on a newly initialized memory array; make sure the code does not attempt to set up a new data structure on an array that has just one header (have to think this through some more)
+
+j) Management of memory fragmentation: we need to define a fragmentation management policy and make sure it’s being followed
+    ->Test: see task5() in memgrind.c
+
