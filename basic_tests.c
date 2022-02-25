@@ -47,7 +47,6 @@ int normal_ops() {
 }
 
 int break_things() {
-    // see what happens when we try doing bad stuff
     
     // request larger chunk than available, part 1
     int req3 = 4094;

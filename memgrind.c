@@ -126,7 +126,7 @@ int task4() {
         // may randomly choose to call malloc()
         if (rand() < RAND_MAX / 2) {
             // add 1 to ensure no requests for zero bytes are made
-            size_req = (rand() * (4096 /TASK_SIZE - sizeof(header_t))) / RAND_MAX + 1;
+            size_req = (rand() * (4096 / TASK_SIZE - sizeof(header_t))) / RAND_MAX + 1;
             //printf("Requesting %d bytes to store in index %d\n", size_req, malloc_ind);
             p[malloc_ind] = malloc(size_req);
             allocated[malloc_ind] = 1;
@@ -166,6 +166,44 @@ int task4() {
     return EXIT_SUCCESS;
 }
 
+// defragmentation test:
+// 1. calculate a request size between 2 and floor(MEMSIZE / 8) - sizeof(header_t)
+// 2. malloc as many requests as possible
+// 3. free the even-numbered chunks
+// 4. free the odd-numbered chunks
+// 5. request three chunks that take up all of memory, ensure all requests are successful
+int task5() {
+    int i;
+    int req_size = (rand() * (4096 / 8 - sizeof(header_t) - 2)) / RAND_MAX + 2;
+    int num_chunks = 4096 / (req_size + sizeof(header_t));
+    // there should be no more than 292 chunks on a 32-bit machine
+    char *p[300];
+    // request memory
+    for (i = 0; i < num_chunks; i++) {
+        p[i] = malloc(req_size);
+    }
+    // free even-numbered chunks
+    for (i = 0; i < num_chunks; i += 2) {
+        free(p[i]);
+    }
+    print_LL_table();
+    // free odd-numbered chunks
+    for (i = 1; i < num_chunks; i += 2) {
+        free(p[i]);
+    }
+    print_LL_table();
+    // request three big chunks
+    req_size = 4096 / 3 - sizeof(header_t);
+    p[0] = malloc(req_size);
+    p[1] = malloc(req_size);
+    p[2] = malloc(4096 - 2 * req_size - 3 * sizeof(header_t));
+    print_LL_table();
+    // clean up
+    free(p[0]);
+    free(p[1]);
+    free(p[2]);
+}
+
 int grind_task(char* task_name, int (*task)()) {
     int i;
     struct timeval start, end;
@@ -184,15 +222,16 @@ int grind_task(char* task_name, int (*task)()) {
 
 int main(int argc, char**argv)
 {   
+    srand(RAND_SEED);
     //required tests:
     //task1();
     //task2();
     //task3a();
     //task3b();
     //task4();
+    task5();
 
-    //required tests (50 iterations):
-    srand(RAND_SEED);
+    //required tests (50 iterations):    
     //grind_task("Task 1", &task1);
     //grind_task("Task 2", &task2);
     //grind_task("Task 3a", &task3a);
@@ -204,7 +243,7 @@ int main(int argc, char**argv)
     //normal_ops();
     //break_things();
     //basic_test5();
-    basic_test6();
+    //basic_test6();
 
     return EXIT_SUCCESS;
 }
