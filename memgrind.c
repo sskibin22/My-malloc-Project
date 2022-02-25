@@ -241,8 +241,7 @@ int main(int argc, char**argv)
 
     //normal_ops();
     //break_things();
-    //basic_test5();
-    //basic_test6();
+    //set_diff_value_types()
 
     return EXIT_SUCCESS;
 }

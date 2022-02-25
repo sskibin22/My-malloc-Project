@@ -108,9 +108,9 @@ int break_things() {
 
     return EXIT_SUCCESS;
 }
-
-int basic_test5(){
-    int *ptr; 
+//simple test to ensure average program level use of mymalloc() is attainable
+int set_diff_value_types(){
+    int *ptr1; 
     char *ptr2; 
     float *ptr3;
     int n, i;
@@ -121,13 +121,13 @@ int basic_test5(){
     printf("Entered number of elements: %d\n", n);
  
     //Dynamically allocate memory to each pointer using malloc()
-    ptr = (int*)malloc(n * sizeof(int));
+    ptr1 = (int*)malloc(n * sizeof(int));
     ptr2 = (char*)malloc(n * sizeof(char));
     ptr3 = (float*)malloc(n * sizeof(float));
     
     //set elements of array as integers
     for (i = 0; i < n; ++i) {
-        ptr[i] = i + 1;
+        ptr1[i] = i + 1;
     }
     //set elements of array as characters
     for (i = 0; i < n; ++i) {
@@ -141,7 +141,7 @@ int basic_test5(){
     //print the elements of each array
     printf("The elements of the integer array are: ");
     for (i = 0; i < n; ++i) {
-        printf("%d, ", ptr[i]);
+        printf("%d, ", ptr1[i]);
     }
     printf("\n");
     printf("The elements of the character array are: ");
@@ -156,33 +156,9 @@ int basic_test5(){
     printf("\n");
 
     //deallocate memory from heap
-    free(ptr);
+    free(ptr1);
     free(ptr2);
     free(ptr3);
     
-    return EXIT_SUCCESS;
-}
-int basic_test6(){
-    int n = 118, *q, *r, *s, *t;
-    char *p[n];
-    for (int i = 0; i < n; i++){
-        p[i] = malloc(22);
-    }
-    q = malloc(38);
-    r = malloc(10);
-    print_LL_table();
-    free(p[50]);
-    free(p[80]);
-    //free(p[81]);
-    print_LL_table();
-    s = malloc(12);
-    print_LL_table();
-    t = malloc(10);
-    print_LL_table();
-    free(q);
-    print_LL_table();
-    free(s);
-    print_LL_table();
-
     return EXIT_SUCCESS;
 }
