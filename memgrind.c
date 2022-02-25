@@ -186,22 +186,20 @@ int task5() {
     for (i = 0; i < num_chunks; i += 2) {
         free(p[i]);
     }
-    print_LL_table();
     // free odd-numbered chunks
     for (i = 1; i < num_chunks; i += 2) {
         free(p[i]);
     }
-    print_LL_table();
     // request three big chunks
     req_size = 4096 / 3 - sizeof(header_t);
     p[0] = malloc(req_size);
     p[1] = malloc(req_size);
     p[2] = malloc(4096 - 2 * req_size - 3 * sizeof(header_t));
-    print_LL_table();
     // clean up
     free(p[0]);
     free(p[1]);
     free(p[2]);
+    return EXIT_SUCCESS;
 }
 
 int grind_task(char* task_name, int (*task)()) {
@@ -229,7 +227,7 @@ int main(int argc, char**argv)
     //task3a();
     //task3b();
     //task4();
-    task5();
+    //task5();
 
     //required tests (50 iterations):    
     //grind_task("Task 1", &task1);
@@ -237,6 +235,7 @@ int main(int argc, char**argv)
     //grind_task("Task 3a", &task3a);
     //grind_task("Task 3b", &task3b);
     //grind_task("Task 4", &task4);
+    grind_task("Task 5", &task5);
 
     //basic tests:
 
