@@ -2,6 +2,16 @@
 #include <stdlib.h>
 #include "mymalloc.h"
 
+int print_pass_fail(int condition) {
+    if (condition) {
+        printf("PASS\n");
+    }
+    else {
+        printf("FAIL\n");
+    }
+    return EXIT_SUCCESS;
+}
+
 //simple test to ensure average program level use of mymalloc() is attainable
 int set_diff_value_types(){
     int *ptr1; 
@@ -69,6 +79,8 @@ int normal_ops() {
     
     printf("\nTest 1: make sure malloc is returning a pointer to the payload, "
         "not the header\n");
+    printf("****************************************************************"
+        "**************\n");
     int p_size_req = 10 * sizeof(int);
     int q_size_req = 5 * sizeof(int);    
     printf("request %d bytes, return pointer p\n", p_size_req);
@@ -83,24 +95,15 @@ int normal_ops() {
     printf("header imputed from p reports size == %d\n", p_size_size);
     printf("header imputed from q reports allocated == %d\n", q_alloc);
     printf("header imputed from q reports size == %d\n", q_size_size);
-    if (p_size_req == p_size_size && p_alloc == 1 
-        && q_size_req == q_size_size && q_alloc == 1) {
-        printf("PASS\n");
-    }
-    else {
-        printf("FAIL\n");
-    }    
+    print_pass_fail(p_size_req == p_size_size && p_alloc == 1 
+        && q_size_req == q_size_size && q_alloc == 1);
     
     printf("\nTest 2: make sure malloc(n) actually allocates n bytes\n");
+    printf("******************************************************\n");
     int p_size_next = (q - p) * sizeof(int) - sizeof(header_t);
     printf("%d bytes requested for p\n", p_size_req);
     printf("p points to %d bytes: computed from pointer to next header\n", p_size_next);
-    if (p_size_req == p_size_next) {
-        printf("PASS\n");
-    }
-    else {
-        printf("FAIL\n");
-    }
+    print_pass_fail(p_size_req == p_size_next);
 
     free(p);
     free(q);
@@ -113,23 +116,27 @@ int break_things() {
     // request larger chunk than available, part 1
     int req3 = MEMSIZE - 2;
     printf("\nTest 3: request too large a chunk of memory, part 1\n");
+    printf("***************************************************\n");
     printf("request allocation of %d bytes\n", req3);
     int *p = malloc(req3);
+    print_pass_fail(p == NULL);
 
     // request larger chunk than available, part 2
     printf("\nTest 4: request too large a chunk of memory, part 2\n");
+    printf("***************************************************\n");
     int req4big = MEMSIZE - 24, req4small = 64;
     printf("request %d bytes, return pointer p\n", req4big);
     p = malloc(req4big);
-    print_LL_table();
     printf("request %d bytes, return pointer q\n", req4small);
     int *q = malloc(req4small);
-    print_LL_table();
+    print_pass_fail(q == NULL);
     free(p);
     
     // request chunk of 0 bytes
     printf("\nTest 5: request allocation of 0 bytes\n");
+    printf("*************************************\n");
     p = malloc(0);
+    print_pass_fail(p == NULL);
 
     // test memory safety
     // allocate 4 chunks: chunk 0 takes a large portion of memory capacity, chunks 1 through 3
@@ -138,8 +145,7 @@ int break_things() {
     // null pointer and an error message. It should not allocate chunk 3, which would result in
     // an allocation beyond the end of memory.
     printf("\nTest 6: memory safety\n");
-    printf("request four allocations, free two of them, then request an allocation\n "
-        "that fits within total free memory but would extend beyond the end of memory\n\n");
+    printf("*********************\n");
     int req6big = (91 * (MEMSIZE - 4 * sizeof(header_t))) / 100;
     int req6small = (3 * (MEMSIZE - 4 * sizeof(header_t))) / 100;
     int req6fail = (5 * (MEMSIZE - 4 * sizeof(header_t))) / 100;
@@ -157,12 +163,13 @@ int break_things() {
     printf("%d bytes of memory free\n", mem_diagnostics(memory_free));
     printf("request %d bytes\n", req6fail);
     int *t = malloc(req6fail);
-    printf("null pointer returned: %d\n\n", t == NULL);
+    print_pass_fail(t == NULL);
     // clean-up
     free(r);
 
     // test free() usage errors
     printf("\nTest 7: free() usage errors\n");
+    printf("***************************\n");
     printf("\ntry freeing a local variable:\n");
     free(&req6big);
     printf("\ntry freeing a ptr offset by +1 byte from a ptr returned by malloc:\n");
@@ -170,6 +177,7 @@ int break_things() {
     printf("\ntry freeing a ptr that's already been freed:\n");
     free(p);
     free(p);
+    printf("\n");
 
     return EXIT_SUCCESS;
 }
