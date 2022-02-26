@@ -118,11 +118,13 @@ int break_things() {
 
     // request larger chunk than available, part 2
     printf("\nTest 4: request too large a chunk of memory, part 2\n");
-    int req4big = MEMSIZE - 32, req4small = 64;
+    int req4big = MEMSIZE - 24, req4small = 64;
     printf("request %d bytes, return pointer p\n", req4big);
     p = malloc(req4big);
+    print_LL_table();
     printf("request %d bytes, return pointer q\n", req4small);
     int *q = malloc(req4small);
+    print_LL_table();
     free(p);
     
     // request chunk of 0 bytes

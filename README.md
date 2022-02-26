@@ -12,9 +12,15 @@ DESCRIPTIONS OF INCLUDED FILES:
     -> headers: stdio.h, stdlib.h, mymalloc.h
     -> int print_LL_table()
     -> int mem_diagnostics(enum diagnostic diag)
-    -> void initialize()
     -> void split(header_t * alloc_split, size_t size_req)
+        ->parameters include: 
+            1) header_t * alloc_split: a pointer to the header of a free chunk large enough for split to function. The header type "best_fit" pointer which is obtained through a best fit algorithm within mymalloc() is passed as the argument of this parameter.
+            2) size_t size_req: an unisigned int equal to the number of bytes requested when a client calls malloc()
+        ->First, split() defines a header type pointer called "free_split" that is positioned within the heap at the end of alloc_split + size_req + byte size of another header.  This is so that it points to the payload rather than the header itself.
+        ->The free_split header is then initialized with the size of the remaining free memory, it's alloc flag is set to 0, and it is set to point to the next chunk in memory which is what alloc_split was pointing to originally.
+        ->alloc_split's metadata is then revised. It's size is set to the byte size requested by the client, it's alloc flag is set to 1, and it is set to point to the now subsequent header type free_split.
     -> void *mymalloc(size_t size_req, char * file, int line)
+        ->
     -> int coalesce(void *p)
     -> void myfree(void *p, char *file, int line)
 
@@ -22,6 +28,10 @@ DESCRIPTIONS OF INCLUDED FILES:
     -> Defines two macros(malloc(s) and free(p)) to replace explicitly calling mymalloc() and myfree() when a client wants to allocate or deallocate memory.
     -> Defines a type header_t as a struct.  This will hold the metadata for each chunk within memory[]
         -> On linux systems the byte size of the header is 24 bytes
+        -> metadata include:
+            1) size of payload
+            2) allocated flag (1 = allocated, 0 = free)
+            3) pointer to next header in linked list
     -> declares an enum for mem_diagnostics()
     -> Contains function prototypes from mymalloc.c
 

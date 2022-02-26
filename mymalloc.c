@@ -88,7 +88,7 @@ void split(header_t *alloc_split, size_t size_req){
 
 void *mymalloc(size_t size_req, char *file, int line){
     header_t *curr, *prev, *best_fit, *same_fit;
-    void *result; 
+    void *mem_ptr; 
     //if byte size requested is less then 1 report error return NULL
     if (size_req < 1) {
         print_err(file, line, "malloc cannot allocate less then 1 byte of memory\n");
@@ -100,9 +100,11 @@ void *mymalloc(size_t size_req, char *file, int line){
         freeLL->alloc = 0;
         freeLL->next = NULL;
     }
+    
     //point curr to first header in the heap then point best_fit pointer to curr
     curr = freeLL;
     best_fit = curr;
+
     //while there are more then one chunks in the heap conduct firt-fit alg to traverse heap
     while ((curr->size < size_req || curr->alloc == 1) && (curr->next != NULL)){
         prev=curr;
@@ -144,27 +146,24 @@ void *mymalloc(size_t size_req, char *file, int line){
     This if conditional checks to see if, in this case, the same_fit pointer is still pointing to a free chunk of memory that
     is still large enough to fit size_req but falls within the conditions stated above. Therefore, we set best_fit equal to 
     the original same_fit pointer so that the first if conditional can catch it below.*/
-    if (best_fit == NULL && same_fit->size > size_req){
+    if (best_fit == NULL && (size_req + (2*sizeof(header_t)) >= same_fit->size)){
         best_fit = same_fit;
     }
+    
+    
     /*if size of chunk found in LL is equal to size of requested memory OR greater than size_req AND less than or equal to size_req + size of a header
     return pointer to the whole chunk*/
-    if (best_fit != NULL && (best_fit->size == size_req || (best_fit->size > size_req && best_fit->size <= size_req + sizeof(header_t)))){
-        if (best_fit->size == size_req){
-        }
-        else{
-            int extra_bytes = best_fit->size - size_req;
-        }
+    if (best_fit != NULL && (best_fit->size == size_req || ((best_fit->size > size_req && best_fit->size <= size_req + sizeof(header_t)) ))){
         best_fit->alloc = 1;
-        result = (void*)(++best_fit);
-        return result;
+        mem_ptr = (void*)(++best_fit);
+        return mem_ptr;
     }
     /*else if size of chunk found in LL is larger then requested memory size + size of a header
     call split method and return pointer to allocated memory chunk*/
     else if(best_fit != NULL && best_fit->size > (size_req + sizeof(header_t))){
         split(best_fit, size_req);
-        result = (void*)(++best_fit);
-        return result;
+        mem_ptr = (void*)(++best_fit);
+        return mem_ptr;
     }
     //else if conditions are not met return NULL
     else{

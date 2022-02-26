@@ -221,17 +221,16 @@ int main(int argc, char**argv)
     // grind_task("Task 1", &task1);
     // grind_task("Task 2", &task2);
     // grind_task("Task 3a", &task3a);
-    // grind_task("Task 3b", &task3b);
-    // grind_task("Task 4", &task4);
-    // grind_task("Task 5", &task5);
+     //grind_task("Task 3b", &task3b);
+     //grind_task("Task 4", &task4);
+    //grind_task("Task 5", &task5);
     // printf("\n");
 
     //basic tests:
-    set_diff_value_types();
+    //set_diff_value_types();
     //normal_ops();
-    /*break_things();   
-    test_range_case();*/
-
+    //break_things();   
+    //test_range_case();
     return EXIT_SUCCESS;
 }
 
