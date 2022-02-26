@@ -187,15 +187,11 @@ int task5() {
     for (i = 1; i < num_chunks; i += 2) {
         free(p[i]);
     }
-    // request three big chunks
-    req_size = MEMSIZE / 3 - sizeof(header_t);
+    // request one big chunk
+    req_size = MEMSIZE - sizeof(header_t);
     p[0] = malloc(req_size);
-    p[1] = malloc(req_size);
-    p[2] = malloc(MEMSIZE - 2 * req_size - 3 * sizeof(header_t));
     // clean up
     free(p[0]);
-    free(p[1]);
-    free(p[2]);
     return EXIT_SUCCESS;
 }
 
@@ -218,13 +214,6 @@ int grind_task(char* task_name, int (*task)()) {
 int main(int argc, char**argv)
 {   
     srand(RAND_SEED);
-    //required tests:
-    //task1();
-    //task2();
-    //task3a();
-    //task3b();
-    //task4();
-    //task5();
 
     //required tests (50 iterations):
     // printf("\nmemgrind test results\n");
