@@ -224,21 +224,24 @@ int main(int argc, char**argv)
     //task3a();
     //task3b();
     //task4();
-    task5();
+    //task5();
 
-    //required tests (50 iterations):    
-    //grind_task("Task 1", &task1);
-    //grind_task("Task 2", &task2);
-    //grind_task("Task 3a", &task3a);
-    //grind_task("Task 3b", &task3b);
-    //grind_task("Task 4", &task4);
-    //grind_task("Task 5", &task5);
+    //required tests (50 iterations):
+    printf("\nmemgrind test results\n");
+    printf("*********************\n");
+    grind_task("Task 1", &task1);
+    grind_task("Task 2", &task2);
+    grind_task("Task 3a", &task3a);
+    grind_task("Task 3b", &task3b);
+    grind_task("Task 4", &task4);
+    grind_task("Task 5", &task5);
+    printf("\n");
 
     //basic tests:
-    //set_diff_value_types()
-    //normal_ops();
-    //break_things();   
-    //test_range_case();
+    set_diff_value_types();
+    normal_ops();
+    /*break_things();   
+    test_range_case();*/
 
     return EXIT_SUCCESS;
 }
