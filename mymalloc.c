@@ -5,11 +5,14 @@
 //declare contiguous array that acts as the 'heap'. Set it's size equal to MEMSIZE
 static char memory[MEMSIZE];
 
-//global variable to keep track of how many chunks(free or not) are in the heap
-int chunk_count = 0;
-
 //Points to the main block of memory which is initially free
 header_t *freeLL = (void*)memory;
+
+// print errors from mymalloc() and myfree() calls
+// caller must include \n in msg, if desired
+void print_err(char *file, int line, char *msg) {
+    printf("ERROR in %s, line %d: %s", file, line, msg);
+}
 
 // print table summarizing contents of linked list
 // Shows node #, size of payload, allocated indicator,
@@ -72,13 +75,6 @@ int mem_diagnostics(enum diagnostic diag) {
     return accum;
 }
 
-//initialize first header and point it to the next block in memory
-void initialize(){
-    freeLL->size = MEMSIZE - sizeof(header_t);
-    freeLL->alloc = 0;
-    freeLL->next = NULL;
-}
-
 //splits a free block that is larger then the size requested
 void split(header_t *alloc_split, size_t size_req){
     header_t *free_split = ((void*)alloc_split + size_req + sizeof(header_t));  //+ sizeof(header_t) //points free_split pointer to end of alloc_split header + requested byte size + size of header(12 bytes)
@@ -88,7 +84,6 @@ void split(header_t *alloc_split, size_t size_req){
     alloc_split->size = size_req;
     alloc_split->alloc = 1;
     alloc_split->next = free_split;
-    chunk_count += 1;
 }
 
 void *mymalloc(size_t size_req, char *file, int line){
@@ -101,9 +96,9 @@ void *mymalloc(size_t size_req, char *file, int line){
     }
     //if mymalloc() is not initilized, initilize it
     if(!(freeLL->size)){
-        initialize();
-        printf("Memory initalized\n");
-        chunk_count = 1;
+        freeLL->size = MEMSIZE - sizeof(header_t);
+        freeLL->alloc = 0;
+        freeLL->next = NULL;
     }
     //point curr to first header in the heap then point best_fit pointer to curr
     curr = freeLL;
@@ -156,11 +151,9 @@ void *mymalloc(size_t size_req, char *file, int line){
     return pointer to the whole chunk*/
     if (best_fit != NULL && (best_fit->size == size_req || (best_fit->size > size_req && best_fit->size <= size_req + sizeof(header_t)))){
         if (best_fit->size == size_req){
-            printf("Exact fitting block allocated\n");
         }
         else{
             int extra_bytes = best_fit->size - size_req;
-            printf("Allocating block with %d more bytes of memory to offset empty chunk\n", extra_bytes);
         }
         best_fit->alloc = 1;
         result = (void*)(++best_fit);
@@ -171,7 +164,6 @@ void *mymalloc(size_t size_req, char *file, int line){
     else if(best_fit != NULL && best_fit->size > (size_req + sizeof(header_t))){
         split(best_fit, size_req);
         result = (void*)(++best_fit);
-        printf("Fitting block allocated with split\n");
         return result;
     }
     //else if conditions are not met return NULL
@@ -194,8 +186,6 @@ int coalesce(void *p) {
         p_header->next = next_header->next;
         p_header->size += next_header->size + sizeof(header_t);
         num_coal++;
-        chunk_count -= 1;
-        // printf("%d\n", chunk_count);
     }
 
     // try to coalesce the previous and current chunks
@@ -206,8 +196,6 @@ int coalesce(void *p) {
             h->next = p_header->next;
             h->size += p_header->size + sizeof(header_t);
             num_coal++;
-            chunk_count -= 1;
-            // printf("%d\n", chunk_count);
             break;
         }
         else {
@@ -235,7 +223,6 @@ void myfree(void *p, char *file, int line)
             if (curr->alloc) {
                 curr->alloc = 0;
                 coalesce(p);
-                printf("Free successful!\n");
                 return;
             }
             // cannot free a chunk that was freed previously
