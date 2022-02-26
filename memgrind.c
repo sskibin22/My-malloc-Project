@@ -127,7 +127,6 @@ int task4() {
         if (rand() < RAND_MAX / 2) {
             // add 1 to ensure no requests for zero bytes are made
             size_req = (rand() * (MEMSIZE / TASK_SIZE - sizeof(header_t))) / RAND_MAX + 1;
-            //printf("Requesting %d bytes to store in index %d\n", size_req, malloc_ind);
             p[malloc_ind] = malloc(size_req);
             allocated[malloc_ind] = 1;
             malloc_ind++;
@@ -144,7 +143,6 @@ int task4() {
                 // sequentially search for an allocated chunk and free it
                 while (i != rand_free) {
                     if (allocated[i]) {
-                        //printf("Attempting to free index %d, which has alloc = %d\n", i, allocated[i]);
                         free(p[i]);
                         allocated[i] = 0;
                         alloc_ct--;
@@ -176,8 +174,7 @@ int task5() {
     int i;
     int req_size = (rand() * (MEMSIZE / 8 - sizeof(header_t) - 2)) / RAND_MAX + 2;
     int num_chunks = MEMSIZE / (req_size + sizeof(header_t));
-    // there should be no more than 292 chunks on a 32-bit machine
-    char *p[300];
+    char *p[MEMSIZE / sizeof(header_t)];
     // request memory
     for (i = 0; i < num_chunks; i++) {
         p[i] = malloc(req_size);
@@ -185,7 +182,7 @@ int task5() {
     // free even-numbered chunks
     for (i = 0; i < num_chunks; i += 2) {
         free(p[i]);
-    }
+    }    
     // free odd-numbered chunks
     for (i = 1; i < num_chunks; i += 2) {
         free(p[i]);
@@ -227,7 +224,7 @@ int main(int argc, char**argv)
     //task3a();
     //task3b();
     //task4();
-    //task5();
+    task5();
 
     //required tests (50 iterations):    
     //grind_task("Task 1", &task1);
@@ -238,11 +235,10 @@ int main(int argc, char**argv)
     //grind_task("Task 5", &task5);
 
     //basic tests:
-
-    //normal_ops();
-    //break_things();
     //set_diff_value_types()
-    test_range_case();
+    //normal_ops();
+    //break_things();   
+    //test_range_case();
 
     return EXIT_SUCCESS;
 }
