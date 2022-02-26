@@ -1,6 +1,9 @@
 #define malloc(s) mymalloc(s, __FILE__, __LINE__)
 #define free(p) myfree(p, __FILE__, __LINE__)
 
+//define total byte size of heap
+#define MEMSIZE 4096
+
 typedef struct header header_t;
 
 struct header {

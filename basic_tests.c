@@ -162,3 +162,36 @@ int set_diff_value_types(){
     
     return EXIT_SUCCESS;
 }
+
+int test_range_case(){
+    int size = 4,
+        br = (MEMSIZE/size) - sizeof(header_t);
+
+    char *p[size];
+
+    //Fill heap
+    for (int i = 0; i < size; i++){
+        p[i] = malloc(br);
+    }
+    print_LL_table();
+    //Free memory so that there is 1 free chunk of size br at node 0 and 1 free chunk of size br at node 3(last node in LL)
+    free(p[0]);
+    free(p[3]);
+    print_LL_table();
+    //attempt to allocate memory of size br
+    p[0] = malloc(br);
+    print_LL_table();
+    free(p[0]);
+    print_LL_table();
+    //attempt to allocate memory of size br - header byte size with only free chunks of size br available
+    p[0] = malloc(br-sizeof(header_t));
+    print_LL_table();
+    free(p[0]);
+    free(p[2]);
+    print_LL_table();
+    //attempt to allocate memory of size br - header byte size with 1 free chunk of size br and 1 free chunk of size 2*br available
+    p[0] = malloc(br-sizeof(header_t));
+    print_LL_table();
+    
+    return EXIT_SUCCESS;
+}

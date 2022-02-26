@@ -71,8 +71,15 @@ d) malloc() sensibly handles requests for a chunk of size 0 or less
     ->Test: call malloc(n) where n is zero or negative, return a null pointer along with an informative error message (maybe only need the error message for negative numbers)
 
 e) malloc() returns first available exact fitting chunk (if one exists) and does not split the fitted chunk but rather returns a pointer to the exact fitting chunk and sets it's allocated flag to true(1)
+    ->Test: call malloc(n) 2 times, free a pointer from the first call to malloc(n), call a new malloc(n). Use print_LL_table() to view nodes in memory and ensure the new call to malloc(n) was fitted into the first chunk with a payload of size n.
 
-f) malloc() handles situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range bite size requested < free chunk available <= bite size requested + byte size of a header(24 bytes on linux).  In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
+f) malloc() handles situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range bite size requested < free chunk available <= (bite size requested + byte size of a header(24 bytes on linux)).  In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
+    ->Test: 
+        Case 1:
+        ->Fill heap with chunks of equal size n. free() first and last chunk. Attempt to allocate malloc(n).
+
+        Case 2: 
+        ->Fill heap with chunks of equal size n. free() first chunk and last two chunks so they coalesce into 1 chunk of size n*2. Attempt to allocate malloc(n).
 
 g) Memory Safety: malloc() cannot allocate a chunk that extends beyond the boundaries of our memory array
     ->Test: allocate four chunks

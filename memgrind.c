@@ -126,7 +126,7 @@ int task4() {
         // may randomly choose to call malloc()
         if (rand() < RAND_MAX / 2) {
             // add 1 to ensure no requests for zero bytes are made
-            size_req = (rand() * (4096 / TASK_SIZE - sizeof(header_t))) / RAND_MAX + 1;
+            size_req = (rand() * (MEMSIZE / TASK_SIZE - sizeof(header_t))) / RAND_MAX + 1;
             //printf("Requesting %d bytes to store in index %d\n", size_req, malloc_ind);
             p[malloc_ind] = malloc(size_req);
             allocated[malloc_ind] = 1;
@@ -174,8 +174,8 @@ int task4() {
 // 5. request three chunks that take up all of memory, ensure all requests are successful
 int task5() {
     int i;
-    int req_size = (rand() * (4096 / 8 - sizeof(header_t) - 2)) / RAND_MAX + 2;
-    int num_chunks = 4096 / (req_size + sizeof(header_t));
+    int req_size = (rand() * (MEMSIZE / 8 - sizeof(header_t) - 2)) / RAND_MAX + 2;
+    int num_chunks = MEMSIZE / (req_size + sizeof(header_t));
     // there should be no more than 292 chunks on a 32-bit machine
     char *p[300];
     // request memory
@@ -191,10 +191,10 @@ int task5() {
         free(p[i]);
     }
     // request three big chunks
-    req_size = 4096 / 3 - sizeof(header_t);
+    req_size = MEMSIZE / 3 - sizeof(header_t);
     p[0] = malloc(req_size);
     p[1] = malloc(req_size);
-    p[2] = malloc(4096 - 2 * req_size - 3 * sizeof(header_t));
+    p[2] = malloc(MEMSIZE - 2 * req_size - 3 * sizeof(header_t));
     // clean up
     free(p[0]);
     free(p[1]);
@@ -235,13 +235,14 @@ int main(int argc, char**argv)
     //grind_task("Task 3a", &task3a);
     //grind_task("Task 3b", &task3b);
     //grind_task("Task 4", &task4);
-    grind_task("Task 5", &task5);
+    //grind_task("Task 5", &task5);
 
     //basic tests:
 
     //normal_ops();
     //break_things();
     //set_diff_value_types()
+    test_range_case();
 
     return EXIT_SUCCESS;
 }

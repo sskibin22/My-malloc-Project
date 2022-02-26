@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include "mymalloc.h"
 
-//define total byte size of heap
-#define MEMSIZE 4096
-
 //declare contiguous array that acts as the 'heap'. Set it's size equal to MEMSIZE
 static char memory[MEMSIZE];
 
