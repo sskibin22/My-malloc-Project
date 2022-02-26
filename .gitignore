@@ -1,5 +1,3 @@
-basic_tests.o
-memgrind.o
-mymalloc.o
-utils.o
-test.exe
+*.o
+*.exe
+*.tar
