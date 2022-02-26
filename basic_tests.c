@@ -9,6 +9,8 @@ int set_diff_value_types(){
     float *ptr3;
     int n, i;
  
+    printf("set_diff_value_types test\n");
+    printf("*************************\n");
     //get the number of elements for the array from user
     printf("Enter number of elements:");
     scanf("%d",&n);
@@ -86,9 +88,9 @@ int normal_ops() {
     
     printf("\nTest 2: make sure malloc(n) actually allocates n bytes\n");
     int p_size_next = (q - p) * sizeof(int) - sizeof(header_t);
+    printf("%d bytes requested for p\n", p_size_req);
     printf("p points to %d bytes: computed from pointer to next header\n", p_size_next);
-    printf("p points to %d bytes: stored as size in header\n", p_size_size);
-    if (p_size_req == p_size_next && p_size_req == p_size_size) {
+    if (p_size_req == p_size_next) {
         printf("PASS\n");
     }
     else {
