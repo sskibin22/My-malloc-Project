@@ -41,9 +41,10 @@ DESCRIPTIONS OF INCLUDED FILES:
 
 4) basic_tests.c
     -> headers: stdio.h, stdlib.h, mymalloc.h
+    -> int set_diff_value_types()
     -> int normal_ops()
     -> int break_things()
-    -> int set_diff_value_types()
+    -> int test_range_case()
 
 5) basic_tests.h
     -> Contains function prototypes from basic_tests.c
@@ -78,7 +79,7 @@ The properties of our library can be divided into two broad categories: those th
 
         -> Given a pointer p returned from malloc(), the bytes immediately preceding p should compose a valid header. Test 1 of the normal_ops() function in basic_tests.c checks this by using malloc() to request two pointers (p and q) to chunks of memory. We cast p and q to be pointers to headers (more precisely, pointers to header_t). Applying pointer artihmetic, we assume that (p - 1) and (q - 1) are headers and reference their size and alloc members, which respectively store the size requested (in bytes) and a 0/1 indicator of whether the memory chunk is allocated. A successful test finds the correct values in these locations. Test 1 prints to screen a message that concludes with PASS if this condition is met, FAIL otherwise.
 
-    d) malloc() should return first available exact fitting chunk (if one exists) and not split the fitted chunk, but rather return a pointer to the exact fitting chunk and sets its allocated flag to true(1)
+    d) malloc() should return first available exact fitting chunk (if one exists) and not split the fitted chunk, but rather return a pointer to the exact fitting chunk and set its allocated flag to true(1)
 
         -> call malloc(n) 2 times, free a pointer from the first call to malloc(n), call a new malloc(n). Use print_LL_table() to view nodes in memory and ensure the new call to malloc(n) was fitted into the first chunk with a payload of size n.
 
