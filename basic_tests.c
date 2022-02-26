@@ -7,23 +7,23 @@ int set_diff_value_types(){
     int *ptr1; 
     char *ptr2; 
     float *ptr3; 
-    int *ptr4;
-    int n = 5, i;
+    int n, i;
  
     printf("set_diff_value_types test\n");
     printf("*************************\n");
     //get the number of elements for the array from user
-    // printf("Enter number of elements:");
-    // scanf("%d",&n);
-    // printf("Entered number of elements: %d\n", n);
+    printf("Enter number of elements:");
+    scanf("%d",&n);
+    printf("Entered number of elements: %d\n", n);
  
     //Dynamically allocate memory to each pointer using malloc()
     ptr1 = (int*)malloc(n * sizeof(int));
     ptr2 = (char*)malloc(n * sizeof(char));
     ptr3 = (float*)malloc(n * sizeof(float));
     print_LL_table();
+    
     //set elements of array as integers
-    for (i = 0; i < n+10; ++i) {
+    for (i = 0; i < n; ++i) {
         ptr1[i] = i + 1;
     }
     //set elements of array as characters
@@ -37,7 +37,7 @@ int set_diff_value_types(){
 
     //print the elements of each array
     printf("The elements of the integer array are: ");
-    for (i = 0; i < n+10; ++i) {
+    for (i = 0; i < n; ++i) {
         printf("%d, ", ptr1[i]);
     }
     printf("\n");
@@ -54,12 +54,12 @@ int set_diff_value_types(){
 
     print_LL_table();
 
-    ptr4 = malloc(40);
     //deallocate memory from heap
     free(ptr1);
     free(ptr2);
     free(ptr3);
-    free(ptr4);
+
+    print_LL_table();
     
     return EXIT_SUCCESS;
 }

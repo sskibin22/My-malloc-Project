@@ -42,6 +42,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 4) basic_tests.c
     -> headers: stdio.h, stdlib.h, mymalloc.h
     -> int set_diff_value_types()
+        ->Gets n = user input as an integer. Calls malloc(n * sizeof(type)) with 3 different pointer types (int, char, float) using type casting.  Populate each allocated memory array with it's respective type value, then prints the contents of the arrays. free() all memory to ensure allocation and deallocation of memory works as it should.
     -> int normal_ops()
     -> int break_things()
     -> int test_range_case()
