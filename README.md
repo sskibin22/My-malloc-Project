@@ -21,6 +21,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 2) mymalloc.h
     -> Defines two macros(malloc(s) and free(p)) to replace explicitly calling mymalloc() and myfree() when a client wants to allocate or deallocate memory.
     -> Defines a type header_t as a struct.  This will hold the metadata for each chunk within memory[]
+        -> On linux systems the byte size of the header is 24 bytes
     -> declares an enum for mem_diagnostics()
     -> Contains function prototypes from mymalloc.c
 
