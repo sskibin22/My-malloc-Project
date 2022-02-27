@@ -203,6 +203,8 @@ int test_range_case(){
     //attempt to allocate memory of size br - header byte size with 1 free chunk of size br and 1 free chunk of size 2*br available
     p[0] = malloc(br-sizeof(header_t));
     print_LL_table();
+    free(p[0]);
+    free(p[1]);
     
     return EXIT_SUCCESS;
 }

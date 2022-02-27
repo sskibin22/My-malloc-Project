@@ -211,26 +211,169 @@ int grind_task(char* task_name, int (*task)()) {
     return EXIT_SUCCESS;
 }
 
+void testing_menu(int *p){
+    int choice1, choice2;
+    srand(RAND_SEED);
+    printf("TESTING MENU\n");
+    printf("------------\n");
+    printf("1) MEMGRIND TEST OPTIONS\n");
+    printf("2) BASIC TEST OPTIONS\n");
+    printf("3) EXIT\n");
+    printf("\nEnter number corresponding to menu choice:");
+    scanf("%d",&choice1);
+    printf("\n");
+
+    switch(choice1){
+        case 1:
+            printf("MEMGRIND TEST OPTIONS:\n");
+            printf("----------------------\n");
+            printf("1) Grind Task 1\n");
+            printf("2) Grind Task 2\n");
+            printf("3) Grind Task 3a\n");
+            printf("4) Grind Task 3b\n");
+            printf("5) Grind Task 4\n");
+            printf("6) Grind Task 5\n");
+            printf("7) Run All Tasks Sequentially\n");
+            printf("\nEnter number corresponding to menu choice:");
+            scanf("%d",&choice2);
+            printf("\n");
+            switch (choice2) {
+                case 1:
+                    grind_task("Task 1", &task1);
+                    printf("\n");
+                    break;
+                case 2:
+                    grind_task("Task 2", &task2);
+                    printf("\n");
+                    break;
+                case 3:
+                    grind_task("Task 3a", &task3a);
+                    printf("\n");
+                    break;
+                case 4:
+                    grind_task("Task 3b", &task3b);
+                    printf("\n");
+                    break;
+                case 5:
+                    grind_task("Task 4", &task4);
+                    printf("\n");
+                    break;
+                case 6:
+                    grind_task("Task 5", &task5);
+                    printf("\n");
+                    break;
+                case 7:
+                    printf("Memgrind Task 1:\n");
+                    printf("----------------\n");
+                    grind_task("Task 1", &task1);
+                    printf("\n");
+                    printf("Memgrind Task 2:\n");
+                    printf("----------------\n");
+                    grind_task("Task 2", &task2);
+                    printf("\n");
+                    printf("Memgrind Task 3a:\n");
+                    printf("-----------------\n");
+                    grind_task("Task 3a", &task3a);
+                    printf("\n");
+                    printf("Memgrind Task 3b:\n");
+                    printf("-----------------\n");
+                    grind_task("Task 3b", &task3b);
+                    printf("\n");
+                    printf("Memgrind Task 4:\n");
+                    printf("----------------\n");
+                    grind_task("Task 4", &task4);
+                    printf("\n");
+                    printf("Memgrind Task 5:\n");
+                    printf("----------------\n");
+                    grind_task("Task 5", &task5);
+                    printf("\n");
+                    break;
+            
+                default:
+                    printf("ERROR: Invalid Input.\n");
+                    printf("\n");
+                    break;
+            }
+            break;
+        
+        case 2:
+            printf("BASIC TEST OPTIONS:\n");
+            printf("-------------------\n");
+            printf("1) Test 1: set_diff_value_types()\n");
+            printf("2) Test 2: normal_ops() \n");
+            printf("3) Test 3: break_things()\n");
+            printf("4) Test 4: test_range_case()\n");
+            printf("5) Run All Tests Sequentially\n");
+            printf("\nEnter number corresponding to menu choice:");
+            scanf("%d",&choice2);
+            printf("\n");
+            switch (choice2) {
+                case 1:
+                    set_diff_value_types();
+                    printf("\n");
+                    break;
+                case 2:
+                    normal_ops();
+                    printf("\n");
+                    break;
+                case 3:
+                    break_things();
+                    printf("\n");
+                    break;
+                case 4:
+                    test_range_case();
+                    printf("\n");
+                    break;
+                case 5:
+                    printf("-------------\n");
+                    printf("Basic Test 1:\n");
+                    printf("-------------\n");
+                    set_diff_value_types();
+                    printf("\n");
+                    printf("-------------\n");
+                    printf("Basic Test 2:\n");
+                    printf("-------------\n");
+                    normal_ops();
+                    printf("\n");
+                    printf("-------------\n");
+                    printf("Basic Test 3:\n");
+                    printf("-------------\n");
+                    break_things(); 
+                    printf("\n"); 
+                    printf("-------------\n");
+                    printf("Basic Test 4:\n");
+                    printf("-------------\n");
+                    test_range_case();
+                    printf("\n");
+                    break;
+            
+                default:
+                    printf("ERROR: Invalid Input.\n");
+                    printf("\n");
+                    break;
+            }
+            break;
+        case 3:
+            *p = 1;
+            break;
+        
+        default:
+            printf("ERROR: Invalid Input.\n");
+            printf("\n");
+            break;
+
+    }
+    
+}
+
 int main(int argc, char**argv)
 {   
-    srand(RAND_SEED);
-
-    //required tests (50 iterations):
-    // printf("\nmemgrind test results\n");
-    // printf("*********************\n");
-    // grind_task("Task 1", &task1);
-    // grind_task("Task 2", &task2);
-    // grind_task("Task 3a", &task3a);
-     //grind_task("Task 3b", &task3b);
-     //grind_task("Task 4", &task4);
-    //grind_task("Task 5", &task5);
-    // printf("\n");
-
-    //basic tests:
-    //set_diff_value_types();
-    //normal_ops();
-    //break_things();   
-    //test_range_case();
+    int flag = 0;
+    
+    while (flag == 0){
+        testing_menu(&flag);
+    }
+   
     return EXIT_SUCCESS;
 }
 
