@@ -168,6 +168,7 @@ int break_things() {
     free(r);
 
     // test free() usage errors
+    // note that p still points to an allocated chunk of memory from Test 6 above
     printf("\nTest 7: free() usage errors\n");
     printf("***************************\n");
     printf("\ntry freeing a local variable:\n");

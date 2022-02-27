@@ -55,19 +55,19 @@ DESCRIPTIONS OF INCLUDED FILES:
 
     -> void split(header_t * alloc_split, size_t size_req)
 
-        ->parameters include: 
+        -> parameters include: 
             1) header_t * alloc_split: a pointer to the header of a free chunk large enough for split to function. The header type "best_fit" pointer which is obtained through a best fit algorithm within mymalloc() is passed as the argument of this parameter.
             2) size_t size_req: an unisigned int equal to the number of bytes requested when a client calls malloc()
 
-        ->First, split() defines a header type pointer called "free_split" that is positioned within the heap at the end of alloc_split + size_req + byte size of another header.  This is so that it points to the payload rather than the header itself.
+        -> First, split() defines a header type pointer called "free_split" that is positioned within the heap at the end of alloc_split + size_req + byte size of another header.  This is so that it points to the payload rather than the header itself.
 
-        ->The free_split header is then initialized with the size of the remaining free memory, it's alloc flag is set to 0, and it is set to point to the next chunk in memory which is what alloc_split was pointing to originally.
+        -> The free_split header is then initialized with the size of the remaining free memory, it's alloc flag is set to 0, and it is set to point to the next chunk in memory which is what alloc_split was pointing to originally.
 
-        ->alloc_split's metadata is then revised. It's size is set to the byte size requested by the client, it's alloc flag is set to 1, and it is set to point to the now subsequent header type free_split.
+        -> alloc_split's metadata is then revised. It's size is set to the byte size requested by the client, it's alloc flag is set to 1, and it is set to point to the now subsequent header type free_split.
 
     -> void *mymalloc(size_t size_req, char * file, int line)
 
-        ->parameters inculde:
+        -> parameters inculde:
             1) size_t size_req: an unsigned integer indicating how much memory in terms of bytes a client wants to allocate
             2) char *file: a filename recieved through the malloc macro to indicate in which file an error has occurred
             3) int line: indicates the line number of where an error occurs within the file
@@ -79,17 +79,17 @@ DESCRIPTIONS OF INCLUDED FILES:
 
         -> 1 anonymous void pointer is defined(mem_ptr): this pointer will be returned to the client when a valid call to malloc is made.  It will point to the beginning of a free chunk of memory directly following it's respective header.
 
-        ->The first thing mymalloc() does is check to make sure a valid argument has been recieved.  size_req should take a value greater than 0.  While size_t takes care of negative values it still allows for a 0 byte request which would place empty headers within the heap.  This would be bad design, so an error message is printed out to the client to let them know they must input a byte size request larger then 0 in order to properly access memory.
+        -> The first thing mymalloc() does is check to make sure a valid argument has been recieved.  size_req should take a value greater than 0.  While size_t takes care of negative values it still allows for a 0 byte request which would place empty headers within the heap.  This would be bad design, so an error message is printed out to the client to let them know they must input a byte size request larger then 0 in order to properly access memory.
 
-        ->mymalloc() then checks to see if it has been initialized yet.  The if conditional returns true if a size value has not been initialized to freeLL yet. (freeLL was defined as a header type pointer and initialized to point to the start of the entire memory array at the top of the file)  If the conditional returns true all fields in freeLL are initialized.  size is set to equal the total amount of byte within the memory array minue the byte size of a header which will consist of the metadata in freeLL. alloc is set to 0 as 4084 bytes of memory will now be considered free.  next will point to NULL as there is only one contiguous chunk in the memory array so it points to the end of the linked list.
+        -> mymalloc() then checks to see if memory has been initialized yet.  The if conditional returns true if a size value has not been initialized to freeLL yet. (freeLL was defined as a header type pointer and initialized to point to the start of the entire memory array at the top of the file)  If the conditional returns true all fields in freeLL are initialized.  size is set to equal the total amount of byte within the memory array minus the byte size of a header which will consist of the metadata in freeLL. alloc is set to 0, as (MEMSIZE - size of header) bytes of memory will now be considered free.  next will point to NULL as there is only one contiguous chunk in the memory array so it points to the end of the linked list.
 
-        ->curr pointer is then set to point to freeLL and best_fit follows suit.
+        -> curr pointer is then set to point to freeLL and best_fit follows suit.
 
-        ->A first-fit algorithm is used to search the linked list using a while loop where prev is set to curr and curr is set to the next chunk in the list, ultimately stepping through memory one chunk at a time.  The loop terminates when curr points to the first free chunk of memory that is large enough to fit the byte size requested by the client or when curr points to the last chunk of memory in the heap. 
+        -> A first-fit algorithm is used to search the linked list using a while loop where prev is set to curr and curr is set to the next chunk in the list, ultimately stepping through memory one chunk at a time.  The loop terminates when curr points to the first free chunk of memory that is large enough to fit the byte size requested by the client or when curr points to the last chunk of memory in the heap. 
 
-        ->A conditional then checks to see if the chunk curr now points to after the first_fit algorithm is free.  If so, best_fit and same_fit are pointed to the chunk of memory that curr points to. Otherwise, set best_fit equal to NULL.  This condition ensures that there is no available free memory that fits the client's request.
+        -> A conditional then checks to see if the chunk curr now points to after the first_fit algorithm is free.  If so, best_fit and same_fit are pointed to the chunk of memory that curr points to. Otherwise, set best_fit equal to NULL.  This condition ensures that there is no available free memory that fits the client's request.
 
-        ->Consider the case when curr is now pointing to a free chunk of memory that is large enough to fit the number of bytes requested by the client but too small to split off a free chunk of memory that can hold a header and a payload larger then 0 bytes.  Without the following while loop mymalloc() would call the split function on this chunk of memory which would either slot a header with 0 bytes of payload into the heap or overwrite a subsequent header with the free_split header.  So this while loop checks for this condition and makes sure best_fit does not equal NULL.  While these conditions are met first_fit continues until a suitable chunk of memory is found that will allow for split to occur without damaging the heap.  If no larger free chunk is found best_fit is set equal to NULL.  same_fit is not updated within this loop to keep track of the first free chunk that curr pointed to after the initial first-fit search terminated.  This is so that when best_fit is returned as null but there is still a free chunk available larger enough to fit the clients request but too small to fit the client's request plus the byte size of a header, best_fit will be set to equal same_fit and then conditions below will catch it to ensure it falls within the right allocation property.
+        -> Consider the case when curr is now pointing to a free chunk of memory that is large enough to fit the number of bytes requested by the client but too small to split off a free chunk of memory that can hold a header and a payload larger then 0 bytes.  Without the following while loop mymalloc() would call the split function on this chunk of memory which would either slot a header with 0 bytes of payload into the heap or overwrite a subsequent header with the free_split header.  So this while loop checks for this condition and makes sure best_fit does not equal NULL.  While these conditions are met first_fit continues until a suitable chunk of memory is found that will allow for split to occur without damaging the heap.  If no larger free chunk is found best_fit is set equal to NULL.  same_fit is not updated within this loop to keep track of the first free chunk that curr pointed to after the initial first-fit search terminated.  This is so that when best_fit is returned as null but there is still a free chunk available larger enough to fit the clients request but too small to fit the client's request plus the byte size of a header, best_fit will be set to equal same_fit and then conditions below will catch it to ensure it falls within the right allocation property.
 
         -> One more while loop is conducted that uses a best_fit search algorithm ensure the chunk of memory returned to the user is the closest fit to the size requested and not the first large enough free chunk.  This picks up where first-fit left off.  Using a combination of first-fit and best-fit was a design choice.  While it may be a slower approach, it will ensure more efficient allocation of memory and less variation in fragmentation.  
 
@@ -109,7 +109,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 
         -> Takes one parameter p, a generic pointer. It presumes that p points to the beginning of a payload allocated by mymalloc(). coalesce() does not attempt to verify this because coalesce() is only called by myfree(). myfree(), in turn, calls coalesce() only after it has verified that the pointer being freed and passed to coalesce() does, in fact, point to the beginning of a payload allocated by mymalloc().
 
-        -> Implements our library's strategy for minimizing memory fragmentation, which is to coalesce the chunk of memory associated with p (call it M_p) with the next and previous chunks of memory[] if they are free. coalesce() first attempts this with the next chunk of memory, a pointer to which is availble from M_p's header. If the next chunk is free, then M_p's pointer-to-next is set equal to the next chunk's pointer-to-next.
+        -> Implements our library's strategy for managing memory fragmentation, which is to coalesce the chunk of memory associated with p (call it M_p) with the next and previous chunks of memory[] if they are free. coalesce() first attempts this with the next chunk of memory, a pointer to which is availble from M_p's header. If the next chunk is free, then M_p's pointer-to-next is set equal to the next chunk's pointer-to-next.
 
         -> coalesce() then traverses the linked list from the beginning until it reaches the header immediately prior to M_p's header, if it exists. If this previous header indicates that its associated chunk of memory is free, its pointer-to-next is set equal to M_p's pointer-to-next.
 
@@ -155,7 +155,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 
         -> int task4() - randomly chooses between allocating and deallocating randomly-sized chunks, repeats until malloc() has been called TASK_SIZE times, then frees all remaining allocated chunks. Constrains chunk size to MEMSIZE/TASK_SIZE - sizeof(header_t) to ensure memory requests aren't too large. The intent of this test is to simulate extensive, fully random usage of the heap. Returns EXIT_SUCCESS upon completion.
 
-        -> int task5() - tests that the fragmentation minimization strategy works after memory has been filled by chunks of a randomly chosen size. Calculates a request size between 2 and (MEMSIZE / 8) - sizeof(header_t); requests allocations of this size through malloc() until memory is fully allocated; frees the even-numbered chunks; frees the odd-numbered chunks; then requests one big chunk that takes up all of memory and ensures the request is successful. 
+        -> int task5() - tests that the fragmentation management strategy works after memory has been filled by chunks of a randomly chosen size. Calculates a request size between 2 and (MEMSIZE / 8) - sizeof(header_t); requests allocations of this size through malloc() until memory is fully allocated; frees the even-numbered chunks; frees the odd-numbered chunks; then requests one big chunk that takes up all of memory and ensures that the request is successful. 
 
     -> int grind_task(char* task_name, int (*task)())
 
@@ -192,6 +192,12 @@ DESCRIPTIONS OF INCLUDED FILES:
 
         -> Gets an integer value from client user as "n". Calls malloc(n * sizeof(type)) with 3 different pointer types (int, char, float) using type casting.  Populate each allocated memory array with it's respective type value, then prints the contents of the arrays. free() all memory to ensure allocation and deallocation of memory works as it should.
 
+        -> A successful result consists of the following printouts and no ERROR messages:
+            1) a table of the linked list immediately after the calls to malloc()
+            2) the contents of the arrays
+            3) a table of the linked list immediately after printing the contents of the arrays (should be identical to the previous table)
+            4) a table of the linked list after all chunks have been freed (should have a single row of free memory of size MEMSIZE minus the size of a header)
+
     -> int normal_ops()
 
         -> Runs two tests associated with "normal operations"--see the Test Plan below for background.
@@ -218,9 +224,20 @@ DESCRIPTIONS OF INCLUDED FILES:
             ERROR: in <file>, line <line>: malloc cannot allocate less then 1 byte of memory
             The second message is PASS, which is displayed if mymalloc returns a null pointer.
 
-            -> Test 6 requests four chunks of memory from a fully free heap, with chunk 0 taking a large proportion of total capacity (~91%) and chunks 1 through 3 each taking an equal proportion of the remaining capacity (~3% of total capacity each). It frees chunks 1 and 3, then requests an allocation of ~5% of total capacity, which is larger than the size of chunks 1 through 3 but smaller than the total free capacity, which is ~6%. malloc() should nevertheless fail to allocate memory, rather, it should return a null pointer and an informative error message. A successful test concludes by displaying two messages. The first is generated by the second call to mymalloc():
+            -> Test 6 requests four chunks of memory from a fully free heap, with chunk 0 taking a large proportion of total capacity (~91%) and chunks 1 through 3 each taking an equal proportion of the remaining capacity (~3% of total capacity each). It frees chunks 1 and 3, then requests an allocation of ~5% of total capacity, which is larger than the size of chunks 1 through 3 but smaller than the total free capacity, which is ~6%. malloc() should nevertheless fail to allocate memory. Rather, it should return a null pointer and an informative error message. A successful test concludes by displaying two messages. The first is generated by the second call to mymalloc():
             ERROR: in <file>, line <line>: No sufficient memory to allocate
-            The second message is PASS, which is displayed if the second call to mymalloc returns a null pointer.
+            The second message is PASS, which is displayed if the final call to mymalloc returns a null pointer.
+
+            -> Test 7 attempts three erroneous uses of free(), corresponding to the three usage errors described in item 2d of the Test Plan:
+
+                1) try to free() memory at the address of a local variable. A successful result displays the following message:
+                ERROR: in <file>, line <line>: attempt to free memory not allocated by malloc()
+                
+                2) try to free() memory at an address offset by +1 byte from a pointer returned by malloc(). A successful result displays the following message:
+                ERROR: in <file>, line <line>: attempt to free memory not allocated by malloc()
+
+                3) free() memory referenced by a pointer obtained from malloc(), then try to free() it again. A successful result displays the following message:
+                ERROR: in <file>, line <line>: attempt to free memory that is already free
 
         -> Returns EXIT_SUCCESS upon successful completion.
 
@@ -251,7 +268,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 TEST PLAN:
 ----------
 
-The properties of our library can be divided into two broad categories: those that the library exhibits when it is used as intended ("normal operations") and those it exhibits when the user attempts actions outside of the design intentions ("attempted breaks"). This test plan states each property, followed by a description of how we verify that each property holds. Note that all test programs described below are called from the main() function of memgrind.c.
+The properties of our library can be divided into two broad categories: those that the library exhibits when it is used as intended ("normal operations") and those it exhibits when the user attempts actions outside of the design intentions ("attempted breaks"). This test plan states each property, followed by a description of how we verify that each property holds. Note that all test programs referenced below are called from the testing_menu() function of memgrind.c.
 
 1) Normal operations
 
@@ -261,7 +278,7 @@ The properties of our library can be divided into two broad categories: those th
 
     b) malloc(k) correctly allocates k bytes of memory from the (simulated) heap
         
-        -> When the user requests allocations of various sizes and writes data to the allocated memory locations, the user should be able to read back the correct data from those locations. The set_diff_value_types() function in basic_tests.c performs this test. The user is prompted for a number of elements n. malloc() is then called to request three allocations: one of size n ints, one of size n chars, and one of size n floats. The chunks referenced by the pointers returned by malloc() are populated with increasing sequences of the respective datatypes (1, 2, 3, ...; A, B, C, ...; 0.5, 1.5, 2.5, ...). The contents of each chunk are then printed to the screen. A successful result is a printout of the entirety of each of the entered sequences. An unsuccessful result is any other output.
+        -> When the user requests allocations of various sizes and writes data to the allocated memory locations, the user should be able to read back the correct data from those locations. The set_diff_value_types() function in basic_tests.c performs this test.
 
         -> A secondary test is to ensure that when a user requests an allocation of k bytes, the number of bytes between the pointer to that memory chunk and a pointer to the next chunk in memory is at least k plus the size of the header. Test 2 of the normal_ops() function in basic_tests.c performs a specific instance of this test.
 
@@ -276,7 +293,10 @@ The properties of our library can be divided into two broad categories: those th
     e) malloc() should handle situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range byte size requested < free chunk available <= (bite size requested + byte size of a header(24 bytes on linux)). In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
 
         -> see test_range_case() under basic_tests.c
+    
+    f) The library should avoid unnecessary fragmentation of the heap. Concretely, memory[] should not have contiguous free chunks, as this unecessarily constrains the size of the largest free chunk and wastes memory on headers that do not serve a useful purpose.
 
+        -> Suppose all of memory[] is allocated in some number of chunks. If the even-numbered chunks are all freed, followed by the odd-numbered chunks, then an effective fragmentation strategy ensures that the entirety of free memory is available to be allocated in a single chunk. This is tested with various chunk sizes in the task5() function of memgrind.c.
 
 2) Attempted breaks
 
@@ -288,14 +308,13 @@ The properties of our library can be divided into two broad categories: those th
 
         -> If a user calls malloc() to request 0 or negative bytes, then malloc() should return a null pointer and an informative error message should be displayed. Test 5 of break_things() is run to verify that this property holds.
     
-    c) malloc() should exhibit memory safety, meaning that it does not allocate a chunk that extends beyond the boundaries of our memory array
+    c) malloc() should exhibit memory safety, meaning that it does not allocate a chunk that extends beyond the boundaries of memory[].
 
         -> This property is partially tested through item 2a above. Another essential test is to ensure that malloc() does not allocate a chunk that extends beyond the boundaries of memory[], even when the request is smaller than total free memory. Test 5 of break_things() tests an example of this scenario.
 
-    d) free() should detect and report usage errors, including 1) trying to free() addresses not obtained with malloc(); 2) trying to free() addresses within memory[] but not at the start of a payload; 3) calling free() more than once on the same pointer
+    d) free() should detect and report usage errors, including:
+        1) trying to free() addresses not obtained with malloc();
+        2) trying to free() addresses within memory[] but not at the start of a payload; and
+        3) calling free() more than once on the same pointer.
 
-        -> Try doing each of these, ensure a correct, informative error message is sent to the terminal
-
-    e) The library should minimize memory fragmentation
-
-        -> see task5() in memgrind.c
+        -> Test 7 of break_things() attempts one instance of each of these usage errors and verifies that appropriate messages are printed.
