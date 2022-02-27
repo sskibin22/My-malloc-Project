@@ -169,7 +169,7 @@ int task4() {
 // 2. malloc as many requests as possible
 // 3. free the even-numbered chunks
 // 4. free the odd-numbered chunks
-// 5. request three chunks that take up all of memory, ensure all requests are successful
+// 5. request one big chunk that take up all of memory, ensure the request is successful
 int task5() {
     int i;
     int req_size = (rand() * (MEMSIZE / 8 - sizeof(header_t) - 2)) / RAND_MAX + 2;
