@@ -67,7 +67,43 @@ DESCRIPTIONS OF INCLUDED FILES:
 
     -> void *mymalloc(size_t size_req, char * file, int line)
 
-        ->
+        ->parameters inculde:
+            1) size_t size_req: an unsigned integer indicating how much memory in terms of bytes a client wants to allocate
+            2) char *file: a filename recieved through the malloc macro to indicate in which file an error has occurred
+            3) int line: indicates the line number of where an error occurs within the file
+
+        -> 4 header type pointers are defined: 
+            1) curr and prev: used within first-fit and best fit search algorithms to step through linked list
+            2) best_fit: the final pointer returned from the search algorithms that is considered to be the best fitting free chunk available
+            3) same_fit: tracks the first free chunk available after first_fit alg is executes for the first time.(used in a specific edge case described below)
+
+        -> 1 anonymous void pointer is defined(mem_ptr): this pointer will be returned to the client when a valid call to malloc is made.  It will point to the beginning of a free chunk of memory directly following it's respective header.
+
+        ->The first thing mymalloc() does is check to make sure a valid argument has been recieved.  size_req should take a value greater than 0.  While size_t takes care of negative values it still allows for a 0 byte request which would place empty headers within the heap.  This would be bad design, so an error message is printed out to the client to let them know they must input a byte size request larger then 0 in order to properly access memory.
+
+        ->mymalloc() then checks to see if it has been initialized yet.  The if conditional returns true if a size value has not been initialized to freeLL yet. (freeLL was defined as a header type pointer and initialized to point to the start of the entire memory array at the top of the file)  If the conditional returns true all fields in freeLL are initialized.  size is set to equal the total amount of byte within the memory array minue the byte size of a header which will consist of the metadata in freeLL. alloc is set to 0 as 4084 bytes of memory will now be considered free.  next will point to NULL as there is only one contiguous chunk in the memory array so it points to the end of the linked list.
+
+        ->curr pointer is then set to point to freeLL and best_fit follows suit.
+
+        ->A first-fit algorithm is used to search the linked list using a while loop where prev is set to curr and curr is set to the next chunk in the list, ultimately stepping through memory one chunk at a time.  The loop terminates when curr points to the first free chunk of memory that is large enough to fit the byte size requested by the client or when curr points to the last chunk of memory in the heap. 
+
+        ->A conditional then checks to see if the chunk curr now points to after the first_fit algorithm is free.  If so, best_fit and same_fit are pointed to the chunk of memory that curr points to. Otherwise, set best_fit equal to NULL.  This condition ensures that there is no available free memory that fits the client's request.
+
+        ->Consider the case when curr is now pointing to a free chunk of memory that is large enough to fit the number of bytes requested by the client but too small to split off a free chunk of memory that can hold a header and a payload larger then 0 bytes.  Without the following while loop mymalloc() would call the split function on this chunk of memory which would either slot a header with 0 bytes of payload into the heap or overwrite a subsequent header with the free_split header.  So this while loop checks for this condition and makes sure best_fit does not equal NULL.  While these conditions are met first_fit continues until a suitable chunk of memory is found that will allow for split to occur without damaging the heap.  If no larger free chunk is found best_fit is set equal to NULL.  same_fit is not updated within this loop to keep track of the first free chunk that curr pointed to after the initial first-fit search terminated.  This is so that when best_fit is returned as null but there is still a free chunk available larger enough to fit the clients request but too small to fit the client's request plus the byte size of a header, best_fit will be set to equal same_fit and then conditions below will catch it to ensure it falls within the right allocation property.
+
+        -> One more while loop is conducted that uses a best_fit search algorithm ensure the chunk of memory returned to the user is the closest fit to the size requested and not the first large enough free chunk.  This picks up where first-fit left off.  Using a combination of first-fit and best-fit was a design choice.  While it may be a slower approach, it will ensure more efficient allocation of memory and less variation in fragmentation.  
+
+        -> Finally, one more condition is checked. After the entire first-fit and best-fit search algorithms are complete and best-fit is still set to equal NULL but there is a chunk of free memory available that is large enough to fit the client's requested byte size(this was tracked by same_fit), then best_fit is pointed back to the same chunk of free memory that same_fit points to.
+
+        -> The next if conditional catches two cases:
+            1) best_fit points to a chunk of memory that's size is equal to the byte size requested by the client
+            2) best_fit points to a chunk of memory that's size is larger then the byte size requested but also less then or equal to the byte size requested plus the byte size of a header.  
+        -> It also makes sure best_fit does not equal NULL 
+        -> If these conditions are met best_fit's alloc field is set to 1, mem_ptr is pointed to the payload of best_fit and then mem_ptr is returned to the client
+
+        -> The following else if conditional catches all cases where the chunk of memory best_fit points to is larger than the byte size requested by the user plus the byte size of a header.  Split is called, mem_ptr is pointed to best_fit's payload, and mem_ptr is returned to the client.
+
+        -> Else (when best_fit = NULL, or anything else) an error message is printed to the user and NULL is returned to the client.
 
     -> int coalesce(void *p)
 
@@ -129,7 +165,16 @@ DESCRIPTIONS OF INCLUDED FILES:
 
     -> void testing_menu(int *p)
 
+        -> takes a pointer to a flag variable that is initialized to 0 in main
+
+        -> produces a menu to select which tests to run.  It also give the option of running all memgrind tests or all basic tests ssequentially at once.
+
+        -> If EXIT option is selected by the client the flag value that *p points to is set to 1 and the while loop within main terminates ending the program run-time.
+
     -> int main(int argc, char**argv)
+
+        ->contains while loop for testing_menu that terminates when flag is set to equal 1.
+
 
 4) basic_tests.h
 
@@ -145,7 +190,7 @@ DESCRIPTIONS OF INCLUDED FILES:
 
     -> int set_diff_value_types()
 
-        -> Gets n = user input as an integer. Calls malloc(n * sizeof(type)) with 3 different pointer types (int, char, float) using type casting.  Populate each allocated memory array with it's respective type value, then prints the contents of the arrays. free() all memory to ensure allocation and deallocation of memory works as it should.
+        -> Gets an integer value from client user as "n". Calls malloc(n * sizeof(type)) with 3 different pointer types (int, char, float) using type casting.  Populate each allocated memory array with it's respective type value, then prints the contents of the arrays. free() all memory to ensure allocation and deallocation of memory works as it should.
 
     -> int normal_ops()
 
@@ -181,6 +226,21 @@ DESCRIPTIONS OF INCLUDED FILES:
 
     -> int test_range_case()
 
+        -> Populates the heap with 4 chunks equal in size
+
+        -> The first chunk and last chunk are then freed
+
+        -> A request for memory equal to the payload size of a free chunk is made with malloc() to make sure the correct property is initiated
+
+        -> This chunk is then freed again and a request for a chunk of memory equal to the payload size minus the byte size of a header is made using malloc().  In this case split should not be called as it would leave a header with no payload in memory.
+
+        -> This chunk is then free plus the 3rd chunk in the heap which is then coalesced with the last chunk in the heap so that there is one free chunk of size n, one allocated chunk of size n and one free chunk of size 2*n in memory. The same request as the one previous is made using malloc() to ensure mymalloc passes the first fitting free chunk even though it is the smallest out of the two and instead allocates and splits the last free chunk with a size of 2*n.
+
+        -> All memory is the freed again.
+
+        -> print_LL_table() is called in appropriate places throughout so that a visual representation of what is happening in the test can be seen.
+
+
 6) Makefile
 
     -> Compiles and links all .c files within project folder.
@@ -211,13 +271,11 @@ The properties of our library can be divided into two broad categories: those th
 
     d) malloc() should return first available exact fitting chunk (if one exists) and not split the fitted chunk, but rather return a pointer to the exact fitting chunk and set its allocated flag to true(1)
 
-        -> call malloc(n) 2 times, free a pointer from the first call to malloc(n), call a new malloc(n). Use print_LL_table() to view headers in memory and ensure the new call to malloc(n) was fitted into the first chunk with a payload of size n.
+        -> see test_range_case() under basic_tests.c
 
     e) malloc() should handle situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range byte size requested < free chunk available <= (bite size requested + byte size of a header(24 bytes on linux)). In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
 
-        -> Case 1: Fill heap with chunks of equal size n. free() first and last chunk. Attempt to allocate malloc(n).
-
-        -> Case 2: Fill heap with chunks of equal size n. free() first chunk and last two chunks so they coalesce into 1 chunk of size n*2. Attempt to allocate malloc(n).
+        -> see test_range_case() under basic_tests.c
 
 
 2) Attempted breaks
