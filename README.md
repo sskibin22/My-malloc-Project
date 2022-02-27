@@ -8,66 +8,145 @@ by Scott Skibin, Scott Burke
 DESCRIPTIONS OF INCLUDED FILES:
 -------------------------------
 
-1) mymalloc.c
-    -> headers: stdio.h, stdlib.h, mymalloc.h
-    -> int print_LL_table()
-    -> int mem_diagnostics(enum diagnostic diag)
-    -> void split(header_t * alloc_split, size_t size_req)
-        ->parameters include: 
-            1) header_t * alloc_split: a pointer to the header of a free chunk large enough for split to function. The header type "best_fit" pointer which is obtained through a best fit algorithm within mymalloc() is passed as the argument of this parameter.
-            2) size_t size_req: an unisigned int equal to the number of bytes requested when a client calls malloc()
-        ->First, split() defines a header type pointer called "free_split" that is positioned within the heap at the end of alloc_split + size_req + byte size of another header.  This is so that it points to the payload rather than the header itself.
-        ->The free_split header is then initialized with the size of the remaining free memory, it's alloc flag is set to 0, and it is set to point to the next chunk in memory which is what alloc_split was pointing to originally.
-        ->alloc_split's metadata is then revised. It's size is set to the byte size requested by the client, it's alloc flag is set to 1, and it is set to point to the now subsequent header type free_split.
-    -> void *mymalloc(size_t size_req, char * file, int line)
-        ->
-    -> int coalesce(void *p)
-    -> void myfree(void *p, char *file, int line)
+1) mymalloc.h
 
-2) mymalloc.h
     -> Defines two macros(malloc(s) and free(p)) to replace explicitly calling mymalloc() and myfree() when a client wants to allocate or deallocate memory.
+
     -> Defines a type header_t as a struct.  This will hold the metadata for each chunk within memory[]
         -> On linux systems the byte size of the header is 24 bytes
         -> metadata include:
             1) size of payload
             2) allocated flag (1 = allocated, 0 = free)
             3) pointer to next header in linked list
-    -> declares an enum for mem_diagnostics()
+
+    -> declares an enum for mem_diagnostics(); see the description of mem_diagnostics() in item 2 below for details
+
     -> Contains function prototypes from mymalloc.c
 
+2) mymalloc.c
+
+    -> headers: stdio.h, stdlib.h, mymalloc.h
+
+    -> void print_err(char *file, int line, char *msg)
+
+        -> Takes as parameters a filename, a line number, and an error message
+
+        -> Prints an error message in the following format:
+            ERROR: in <file>, line <line>: <msg>
+
+        -> Used by mymalloc() and myfree() to provide more informative error messages than the C standard library's malloc() and free()
+    
+    -> int print_LL_table()
+
+        -> The library maintains metadata about the simulated heap in a linked list, the nodes of which are of type header_t. For the remainder of this document, these nodes are referred to as "headers". print_LL_table() prints a table with a row for each header, showing:
+            -> the size in bytes of the payload associated with the header;
+            -> the allocated flag for the header; and
+            -> the number of bytes between the start of the header and the start of the next header. If there is no next header, NULL is printed.
+        The function returns EXIT_SUCCESS if it runs successfully.
+
+    -> int mem_diagnostics(enum diagnostic diag)
+
+        -> Traverses the linked list and returns one of the following diagnostics, depending on the argument provided:
+            -> memory_free: total free memory in bytes
+            -> total_payload: total payload in memory (whether free or allocated), in bytes
+            -> free_chunks: number of free chunks of memory available
+            -> total_chunks: total number of chunks of memory
+            -> largest_free: size in bytes of the largest free chunk of memory
+
+    -> void split(header_t * alloc_split, size_t size_req)
+
+        ->parameters include: 
+            1) header_t * alloc_split: a pointer to the header of a free chunk large enough for split to function. The header type "best_fit" pointer which is obtained through a best fit algorithm within mymalloc() is passed as the argument of this parameter.
+            2) size_t size_req: an unisigned int equal to the number of bytes requested when a client calls malloc()
+
+        ->First, split() defines a header type pointer called "free_split" that is positioned within the heap at the end of alloc_split + size_req + byte size of another header.  This is so that it points to the payload rather than the header itself.
+
+        ->The free_split header is then initialized with the size of the remaining free memory, it's alloc flag is set to 0, and it is set to point to the next chunk in memory which is what alloc_split was pointing to originally.
+
+        ->alloc_split's metadata is then revised. It's size is set to the byte size requested by the client, it's alloc flag is set to 1, and it is set to point to the now subsequent header type free_split.
+
+    -> void *mymalloc(size_t size_req, char * file, int line)
+
+        ->
+
+    -> int coalesce(void *p)
+
+        -> Takes one parameter p, a generic pointer. It presumes that p points to the beginning of a payload allocated by mymalloc(). coalesce() does not attempt to verify this because coalesce() is only called by myfree(). myfree(), in turn, calls coalesce() only after it has verified that the pointer being freed and passed to coalesce() does, in fact, point to the beginning of a payload allocated by mymalloc().
+
+        -> Implements our library's strategy for minimizing memory fragmentation, which is to coalesce the chunk of memory associated with p (call it M_p) with the next and previous chunks of memory[] if they are free. coalesce() first attempts this with the next chunk of memory, a pointer to which is availble from M_p's header. If the next chunk is free, then M_p's pointer-to-next is set equal to the next chunk's pointer-to-next.
+
+        -> coalesce() then traverses the linked list from the beginning until it reaches the header immediately prior to M_p's header, if it exists. If this previous header indicates that its associated chunk of memory is free, its pointer-to-next is set equal to M_p's pointer-to-next.
+
+        -> coalesce() returns the number of memory chunks coalesced: 0, 1, or 2.
+
+    -> void myfree(void *p, char *file, int line)
+
+        -> Takes as a parameter a generic pointer p, which is intended to be a pointer to a chunk of memory allocated by mymalloc(). Also takes as parameters a filename and line number, which are supplied through the macro statements malloc(s) and free(p) and are used to generate informative error messages.
+
+        -> First checks to make sure memory is initialized, exits with the following error message if not:
+            ERROR: in <file>, line <line>: attempt to free when memory is not initialized
+
+        -> Then traverses the linked list, checking if the payload associated with each header starts at the same address referenced by p
+            -> If yes and the header indicates that the chunk is allocated, then set the chunk's allocated flag to 0 and call coalesce().
+            -> If yes but the header indicates that the chunk is already free, then this is a usage error of trying to free a chunk that was freed previously. Display the following error message:
+                ERROR: in <file>, line <line>: attempt to free memory that is already free
+            -> If no but start of the header happens to equal the address referenced by p, then this is a special case of trying to free memory not allocated by mymalloc() and the following error message is displayed:
+                ERROR: in <file>, line <line>: attempt to free a memory chunk that starts at a header
+
+        -> If the traversal terminates and none of the conditions above was satisfied, then p references a chunk of memory that was not allocated by mymalloc() and the following error message is displayed:
+            ERROR: in <file>, line <line>: attempt to free memory not allocated by malloc()
+
+        -> With the exception of pointers to the start of a header, we do not distinguish between non-malloc() pointers within memory[] and outside of memory[]. Due to the undefined behavior of the > and < operators on pointers in non-contiguous blocks of memory, we would need to examine every byte of memory[] for equality to reliably make this distinction. We decided this was not worthwhile.
+            
+
 3) memgrind.c
+
     -> headers: stdio.h, stdlib.h, sys/time.h, mymalloc.h, basic_tests.h
-    -> Defines 3 macros(TASK_REPEAT, TASK_SIZE, RAND_SEED)
-        -> TASK_REPEAT set to int value of 50 for number of times each task is collected for data collection purposes
+
+    -> Defines 3 macros(TASK_REPEAT, TASK_SIZE, RAND_SEED)    
+        -> TASK_REPEAT set to int value of 50 for number of times each task is performed for the purpose of generating a sample of computation times
         -> TASK_SIZE set to int value of 120 for repeating processes within tasks
         -> RAND_SEED set to integer value of 8675309 for randomization within tasks
+
     -> int task1()
+
     -> int task2()
+
     -> int task3a()
+
     -> int task3b()
+
     -> int task4()
+
     -> int task5()
+
     -> int grind_task(char* task_name, int (*task)())
+
     -> int main(int argc, char**argv)
 
 4) basic_tests.c
+
     -> headers: stdio.h, stdlib.h, mymalloc.h
+
     -> int set_diff_value_types()
+
         ->Gets n = user input as an integer. Calls malloc(n * sizeof(type)) with 3 different pointer types (int, char, float) using type casting.  Populate each allocated memory array with it's respective type value, then prints the contents of the arrays. free() all memory to ensure allocation and deallocation of memory works as it should.
+
     -> int normal_ops()
+
     -> int break_things()
+
     -> int test_range_case()
 
 5) basic_tests.h
+
     -> Contains function prototypes from basic_tests.c
 
-6) utils.c
-    -> headers: stdio.h, stdlib.h, mymalloc.h
-    -> void print_err(char *file, int line, char *msg)
+6) Makefile
 
-7) MakeFile
     -> Compiles and links all .c files within project folder.
-    -> Creates executable file called "test" to run all tests/tasks within main() of memgrind.c
+    
+    -> Creates executable file called "test" to run testing routine within main() of memgrind.c
 
 ----------
 TEST PLAN:
@@ -93,7 +172,7 @@ The properties of our library can be divided into two broad categories: those th
 
     d) malloc() should return first available exact fitting chunk (if one exists) and not split the fitted chunk, but rather return a pointer to the exact fitting chunk and set its allocated flag to true(1)
 
-        -> call malloc(n) 2 times, free a pointer from the first call to malloc(n), call a new malloc(n). Use print_LL_table() to view nodes in memory and ensure the new call to malloc(n) was fitted into the first chunk with a payload of size n.
+        -> call malloc(n) 2 times, free a pointer from the first call to malloc(n), call a new malloc(n). Use print_LL_table() to view headers in memory and ensure the new call to malloc(n) was fitted into the first chunk with a payload of size n.
 
     e) malloc() should handle situations when a client requests a number of bytes within memory, and memory[] contains free chunks of size within the range byte size requested < free chunk available <= (bite size requested + byte size of a header(24 bytes on linux)). In this case malloc() should continue to search for a free chunk large enough to call split() or if no larger chunk is available malloc() should fit the requested amount of bytes into the first available free chunk without calling split to avoid initializing headers with 0 bytes of payload or overwriting memory with a header.
 
